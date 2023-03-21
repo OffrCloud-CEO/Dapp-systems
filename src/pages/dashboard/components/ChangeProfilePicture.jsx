@@ -73,7 +73,14 @@ const ChangeProfilePicture = ({ setSettingDp }) => {
 
     return (
         <div className="cover main">
-            <Toaster/>
+            <Toaster 
+                    toastOptions={{
+                        style: {
+                            background: '#363636',
+                            color: '#fff',
+                        },
+                    }}
+                />
             <div className="div">
                 {pending && <div className="pending">
                     <div className="loadingio-spinner-gear-abqyc1i9wu"><div className="ldio-r68llg26yv">

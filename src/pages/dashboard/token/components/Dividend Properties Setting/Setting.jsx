@@ -31,6 +31,10 @@ const Setting = () => {
             if (temp.interval > 3) {
                 setTemp({ ...temp, interval: 0 });
             }
+        }else if (temp.period === 6) {
+            if (temp.interval < 5) {
+                setTemp({ ...temp, interval: 5 });
+            }
         }
     }, [temp.period]);
 
@@ -61,7 +65,7 @@ const Setting = () => {
                 break;
 
             default:
-                obj.period = 30 * 24 * 60 * 60;
+                obj.period = 1 * 60 * 60;
                 break;
         }
         switch (parseInt(temp.interval)) {
@@ -82,7 +86,7 @@ const Setting = () => {
                 break;
 
             default:
-                obj.interval = 30 * 24 * 60 * 60;
+                obj.interval = 5 * 60;
                 break;
         }
 
@@ -111,9 +115,10 @@ const Setting = () => {
             case 730:
                 _period = 5;
                 break;
+            
 
             default:
-                _period = 0;
+                _period = 6;
                 break;
         }
         switch (_params) {
@@ -134,7 +139,7 @@ const Setting = () => {
                 break;
 
             default:
-                _interval = 0;
+                _interval = 5;
                 break;
         }
 
@@ -233,21 +238,24 @@ const Setting = () => {
                         <option value="3">365 days ~ (1 Year)</option>
                         <option value="4">545 days ~ (1 Year, Six Months)</option>
                         <option value="5">730 days ~ (2 Year)</option>
+                        {/* Only for test period */}
+                        <option value="6">1 hour ~ (test)</option>
                     </select>}
                 </div>
                 <label>Dividend Intervals</label>
                 <div className="inp-box">
                     {temp.interval !== null && <select className='inp' defaultValue={temp && temp.interval} onChange={(e) => setTemp({ ...temp, interval: Number(e.target.value) })}>
-                        <option value="0">7 Days ~ (Weekly)</option>
-                        {temp.period && temp.period >= 1 && <option value="1">30 Days ~ (Monthly)</option>}
-                        {temp.period && temp.period >= 2 && <option value="2">60 Days ~ (Every 2 Months)</option>}
-                        {temp.period && temp.period >= 2 && <option value="3">90 Days ~ (Every 3 Months)</option>}
-                        {temp.period && temp.period >= 4 && <option value="4">180 Days ~ (Every 6 Months)</option>}
+                        {temp.period !== 6 && <option value="0">7 Days ~ (Weekly)</option>}
+                        {temp.period && temp.period !== 6 && temp.period >= 1 && <option value="1">30 Days ~ (Monthly)</option>}
+                        {temp.period && temp.period !== 6 && temp.period >= 2 && <option value="2">60 Days ~ (Every 2 Months)</option>}
+                        {temp.period && temp.period !== 6 && temp.period >= 2 && <option value="3">90 Days ~ (Every 3 Months)</option>}
+                        {temp.period && temp.period !== 6 && temp.period >= 4 && <option value="4">180 Days ~ (Every 6 Months)</option>}
+                        {temp.period && temp.period === 6 && <option value="5">5 minute ~ (Every 5 Minute)</option>}
                     </select>}
                 </div>
                 <label>Dividend Percent</label>
                 <div className={`inp-box`}>
-                    <input type="number" min={1} value={amount} onChange={(e) => setAmount(Number(e.target.value <= 100 ? e.target.value : 1))} name="" placeholder='100%' id="" className="inp" />
+                    <input type="number" min={1} step={0.25} value={amount} onChange={(e) => setAmount(Number(e.target.value <= 100 ? e.target.value : 1))} name="" placeholder='100%' id="" className="inp" />
                 </div>
                 <br />
                 <div className={`inp-box ${!canProceed && "disable"} ${pending &&  "disable"}`} onClick={updateButtonHandler} >

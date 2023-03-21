@@ -36,7 +36,14 @@ const TranferTokens = ({setTransfering}) => {
   return (
     <transferData.Provider value={{setSendAMount, setStatus, setCurrentPage, setToAddress, setSymbol, transData, setPending, setOldBalance}}>
       <div className="cover">
-        <Toaster />
+        <Toaster 
+                    toastOptions={{
+                        style: {
+                            background: '#363636',
+                            color: '#fff',
+                        },
+                    }}
+                />
         <div className="div wide">
         {!pending && <CloseBTN control={setTransfering} />}
           {pending && <div className="pending">

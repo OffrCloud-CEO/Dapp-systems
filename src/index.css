@@ -1568,37 +1568,77 @@ a:active, a:any-link {
   transition: var(--trans);
 }
 
+.calc .btns div.disable{
+  cursor: not-allowed;
+  opacity: .5;
+  background-color: rgba(38, 32, 227, 0.094);
+}
+
+.calc .btns div.disable:active{
+  transform: none;
+  opacity: .5;
+}
+
+.calc .btns div.disable img{
+  filter: grayscale(100);
+  transform: rotate(45deg);
+}
+
 .calc .offr{
   padding: 10px 0;
 }
 
 .calc .btns div:hover{
-  background-color: #2620e318;
+  background-color: rgba(38, 32, 227, 0.094);
 }
 
 .calc .btns div:active{
   opacity: .7;
-  transform: scale(95%);
+  transform: scale(.93);
 }
 
 .calc .btns img{
+  transform: rotate(0deg);
   height: 2rem;
 }
 
 .tagger{
   padding: 5px 0;
   width: 100%;
+  margin: 1rem 0;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  flex-direction: row-reverse;
 }
 
-.tagger .tag{
+.div-carosel .calc .tagger > .tag span{
   padding: 5px 10px;
-  font-size: x-small;
+  font-size: .7rem;
+  font-weight: 450;
+  transition: var(--trans);
   cursor: pointer;
   border: 1px solid currentColor;
   color: var(--main-blue);
-  border-radius: .5rem;
+  border-radius: .25rem;
+}
+
+.div-carosel .calc .tagger > .tag{
+  transition: var(--trans);
+}
+
+.div-carosel .calc .tagger > .tag:hover span{
+  background-color: var(--main-blue);
+  border: 1px solid transparent;
+  color: var(--white);
+}
+
+.div-carosel .calc .tagger > .tag:hover {
+  transform: scale(1.15) translateY(-2px) translateX(-7px);
+}
+
+.div-carosel .calc .tagger > .tag:active {
+  opacity: .5;
+  transform: scale(.95);
 }
 
 .div-carosel .c{

@@ -15,7 +15,7 @@ import { fireStore } from "../../../firebase/sdk";
 /* Creating a context object. */
 export const ownerContext = React.createContext();
 const Owner = () => {
-  const { contract, coinBase, storeDataUser, batchData, setNewSaleState } = useContext(contextData);
+  const { contract, coinBase, storeDataUser, batchData } = useContext(contextData);
   const [initiateTokenSale, setInitiateTokenSale] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState(false);
@@ -316,7 +316,14 @@ const Owner = () => {
     <ownerContext.Provider value={{ initiateTokenSale, setInitiateTokenSale, setSalesStarted }}>
       <div className="dash_section">
 
-        <Toaster />
+        <Toaster 
+                    toastOptions={{
+                        style: {
+                            background: '#363636',
+                            color: '#fff',
+                        },
+                    }}
+                />
 
         <div className="greet">
           <div className="title">{greetUser()} {storeDataUser ? ((storeDataUser?.name).split(" ")[0]) : "@firstname"}, </div>

@@ -302,8 +302,17 @@ export function daysToText(days) {
     return `${years} year${years > 1 ? 's' : ''}`;
   } else if (months > 0) {
     return `${months} month${months > 1 ? 's' : ''}`;
-  } else {
+  } else if (days >= 1) {
     return `${days} day${days > 1 ? 's' : ''}`;
+  }else{
+    const value = Math.floor(days * (24 * 60 * 60));
+    const hours = Math.floor(value / (60 * 60));
+    const minute = Math.floor(value / (60));
+    if (hours > 0) {
+      return `${hours} hour${hours > 1 ? "s": '' }`;
+    }else {
+      return `${minute} minute${minute > 1 ? "s": '' }`;
+    }
   }
 }
 

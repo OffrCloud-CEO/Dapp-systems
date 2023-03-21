@@ -87,7 +87,14 @@ const StartTokenSale = () => {
     return (
         <tokenSaleContext.Provider value={{ dividendProperties, dividendIntializationPeriodTime, setDividendIntializationPeriodTime, dividendPercentage, divData, setDivData, setDividendPercentage, setPending, dividend, setDividends, batchNameTxt, setBatchNameTxt, dates, setDates, transactionStatus, setTransactionStatus, setCurrentPage }}>
             <div className="cover">
-                <Toaster/>
+                <Toaster 
+                    toastOptions={{
+                        style: {
+                            background: '#363636',
+                            color: '#fff',
+                        },
+                    }}
+                />
                 <div className="div wide">
                     {pending && <div className="pending">
                         <div className="loadingio-spinner-gear-abqyc1i9wu"><div className="ldio-r68llg26yv">

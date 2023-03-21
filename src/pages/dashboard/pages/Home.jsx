@@ -138,7 +138,7 @@ const HomePage = () => {
         {coinInfo && coinInfo?.isDividendPeriod &&<div className="div-3">
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-land-sales-80.png"} detail={`${coinInfo?.isHolder && coinInfo?.myBalance > 0 ? "Valid Holder": "Invalid Holder"}`} type={`${coinInfo?.isHolder && coinInfo?.myBalance > 0 ?  "status" : ""}`} p={"Holder Status"} />
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/on.png"} detail={coinInfo?.txtEndDate} p={"Next Dividend Payment"} />
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-client-64.png"} detail={`${((coinInfo?.myBalance / (10**18)) * 0.05).toFixed()} USDC`} p={`Dividend Amount`} />
+          <GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-client-64.png"} detail={`${(formatNum((coinInfo?.myBalance / (10**18)) * 0.05))} USDC`} p={`Dividend Amount`} />
         </div>}
         <label>Coin Informations</label> 
         <div className="div-3">

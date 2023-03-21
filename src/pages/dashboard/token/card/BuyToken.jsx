@@ -65,7 +65,14 @@ const BuyToken = ({ setBuying }) => {
   return (
     <buyData.Provider value={{ currency, toUsd, buyArr, setBuyArr, setCurrentPage, setBuying, setPending, setApproved, buyTokenData, setBuyTokenData }}>
       <div className="cover">
-        <Toaster />
+        <Toaster 
+                    toastOptions={{
+                        style: {
+                            background: '#363636',
+                            color: '#fff',
+                        },
+                    }}
+                />
         <div className="div wide">
           {currentPage !==2 && !pending && <CloseBTN control={setBuying}/>}
           {pending && <div className="pending">
