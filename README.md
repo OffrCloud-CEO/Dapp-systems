@@ -19,24 +19,35 @@ To run OFFR Token Dapp locally on your machine, follow these simple steps
 ## Dependencies
 This Dapp was built using the following dependencies:
 
-- ethers.js
-- @reduxjs/toolkit
 - apexcharts
 - bootstrap
 - dotenv
+- emailjs-com
+- ethers
 - firebase
+- google-libphonenumber
+- libphonenumber-js
+- react
 - react-apexcharts
+- react-countdown
+- react-dom
+- react-dotenv
 - react-hot-toast
+- react-redux
+- react-router
 - react-router-dom
+- react-scripts
+- redux
+- web-vitals
 - web3
 
 
 ## Links
 
-- [Project Website](https://projectUrl.com)
-- [Token Website](https://tokenUrl.com)
+<!-- - [Project Website](https://projectUrl.com) -->
+<!-- - [Token Website](https://tokenUrl.com) -->
 - [OFFR Cloud Website](https://offrcloudUrl.com)
-- [Developer Website](https://developerUrl.com)
+- [Developer Website](https://www.github.com/fabiconcept)
 
 
-This project was designed and developed by **`Fabiconcept`**
+<!-- This project was designed and developed by **`Fabiconcept`** --># Dapp-systems
