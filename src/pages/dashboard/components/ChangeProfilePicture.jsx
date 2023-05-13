@@ -8,8 +8,7 @@ import { fireStore } from '../../../firebase/sdk';
 import { contextData } from '../dashboard';
 
 const ChangeProfilePicture = ({ setSettingDp }) => {
-    const { storeDataUser, coinBase, setStoreDataUser } = useContext(contextData);
-    const loginSession = JSON.parse(localStorage.getItem('loginSession'));
+    const { storeDataUser, coinBase } = useContext(contextData);
     const [pending, setPending] = useState(false);
     const [images, setImages] = useState([
         { img: "https://gineousc.sirv.com/Images/profile_pictures/icons8-sheep-on-bike-96.png", id: 0, selected: false },
@@ -23,7 +22,7 @@ const ChangeProfilePicture = ({ setSettingDp }) => {
         { img: "https://gineousc.sirv.com/Images/profile_pictures/icons8-octopus-96.png", id: 8, selected: false },
         { img: "https://gineousc.sirv.com/Images/profile_pictures/icons8-racoon-96.png", id: 9, selected: false },
     ])
-    const [dp, setDp] = useState(null)
+    const [dp, setDp] = useState(null);
     const [selection, setSelection] = useState(0);
 
     useEffect(() => {
@@ -52,7 +51,8 @@ const ChangeProfilePicture = ({ setSettingDp }) => {
         setPending(true);
         const userRef = doc(fireStore, "user_credentials", `${coinBase?.coinbase}`);
         const img = images[e].img;
-        const update = await updateDoc(userRef, {
+
+        await updateDoc(userRef, {
             profile_picture: img
         });
 

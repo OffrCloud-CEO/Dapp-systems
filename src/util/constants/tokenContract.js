@@ -1,6 +1,6 @@
-const address = '0x24BDB45ebC662223deb9745cbF1f0C7632541824';
+const tokenAddress = process.env.REACT_APP_TOKEN_ADDRESS;
 
-const ABI = [
+const tokenABI = [
 	{
 		"inputs": [
 			{
@@ -43,25 +43,6 @@ const ABI = [
 			{
 				"indexed": true,
 				"internalType": "address",
-				"name": "tokenholder",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amountUSDC",
-				"type": "uint256"
-			}
-		],
-		"name": "AmountPaidOut",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
 				"name": "owner",
 				"type": "address"
 			},
@@ -79,6 +60,32 @@ const ABI = [
 			}
 		],
 		"name": "Approval",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "userAddress",
+				"type": "address"
+			}
+		],
+		"name": "KYCUserAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "userAddress",
+				"type": "address"
+			}
+		],
+		"name": "KYCUserRemoved",
 		"type": "event"
 	},
 	{
@@ -196,7 +203,7 @@ const ABI = [
 	},
 	{
 		"inputs": [],
-		"name": "MINTER_ROLE",
+		"name": "KYC_ROLE",
 		"outputs": [
 			{
 				"internalType": "bytes32",
@@ -209,38 +216,12 @@ const ABI = [
 	},
 	{
 		"inputs": [],
-		"name": "_beneficiary",
+		"name": "MINTER_ROLE",
 		"outputs": [
 			{
-				"internalType": "address",
+				"internalType": "bytes32",
 				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "_cap",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "_rate",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"type": "bytes32"
 			}
 		],
 		"stateMutability": "view",
@@ -250,11 +231,11 @@ const ABI = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "holder",
+				"name": "user",
 				"type": "address"
 			}
 		],
-		"name": "addHolder",
+		"name": "addKYCUser",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -343,17 +324,23 @@ const ABI = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "account",
+				"name": "_tokenOwner",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
-				"name": "amount",
+				"name": "_amount",
 				"type": "uint256"
 			}
 		],
-		"name": "burn",
-		"outputs": [],
+		"name": "burnMyBalance",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -398,12 +385,44 @@ const ABI = [
 	},
 	{
 		"inputs": [],
-		"name": "getHolderList",
+		"name": "getDividendPaymentPeriodState",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getKYCList",
 		"outputs": [
 			{
 				"internalType": "address[]",
 				"name": "",
 				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_stakeHolder",
+				"type": "address"
+			}
+		],
+		"name": "getOwnedTokens",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -473,17 +492,17 @@ const ABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "_stakeHolder",
+				"type": "address"
 			}
 		],
-		"name": "holderList",
+		"name": "isKYCed",
 		"outputs": [
 			{
-				"internalType": "address",
+				"internalType": "bool",
 				"name": "",
-				"type": "address"
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -491,7 +510,7 @@ const ABI = [
 	},
 	{
 		"inputs": [],
-		"name": "holderListLength",
+		"name": "kycUsersListLength",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -545,11 +564,11 @@ const ABI = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "holder",
+				"name": "user",
 				"type": "address"
 			}
 		],
-		"name": "removeHolder",
+		"name": "removeKYCUser",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -720,11 +739,37 @@ const ABI = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "state",
+				"type": "bool"
+			}
+		],
+		"name": "updateDividendPeriodStatus",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "stakeHolder",
+				"type": "address"
+			}
+		],
+		"name": "updateOwnsToken",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"stateMutability": "payable",
 		"type": "receive"
 	}
 ];
 
 
-export {address, ABI}
+export {tokenAddress, tokenABI}
 

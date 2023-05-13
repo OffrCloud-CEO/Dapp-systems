@@ -1,6 +1,6 @@
-const address3 = "0xF473acf9533a05927494c0d04e0eB4b05Ab9241E";
+const tokenSaleAddress = process.env.REACT_APP_TOKENSALE_ADDRESS;
 
-const ABI3 = [
+const tokenSaleABI = [
 	{
 		"inputs": [
 			{
@@ -11,69 +11,6 @@ const ABI3 = [
 		],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "_count",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "DividendDistributed",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "_period",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "_interval",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "_dividendAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "DividendPaymentPeriodActivated",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "project_owner",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amountUSDC",
-				"type": "uint256"
-			}
-		],
-		"name": "FundedContract",
-		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -92,6 +29,19 @@ const ABI3 = [
 			}
 		],
 		"name": "FundsReleased",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "Paused",
 		"type": "event"
 	},
 	{
@@ -239,8 +189,34 @@ const ABI3 = [
 		"type": "event"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "Unpaused",
+		"type": "event"
+	},
+	{
 		"inputs": [],
 		"name": "DEFAULT_ADMIN_ROLE",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "PAUSER_ROLE",
 		"outputs": [
 			{
 				"internalType": "bytes32",
@@ -304,90 +280,8 @@ const ABI3 = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "usdcAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address payable",
-				"name": "intermediateAddress",
-				"type": "address"
-			}
-		],
-		"name": "convertEthToUsdc",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "distributeDividend",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "dividendReceived",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_owner",
-				"type": "address"
-			}
-		],
-		"name": "dividendReceivedAmountOf",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "endSale",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "usdcAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "fundContract",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -413,84 +307,6 @@ const ABI3 = [
 				"internalType": "address",
 				"name": "",
 				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getDividendCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getDividendInterval",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getDividendIntervalCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getDividendPercent",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getDividendPeriod",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getLastDividendTime",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -624,6 +440,26 @@ const ABI3 = [
 	},
 	{
 		"inputs": [],
+		"name": "pause",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "paused",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "releaseFunds",
 		"outputs": [],
 		"stateMutability": "nonpayable",
@@ -662,48 +498,6 @@ const ABI3 = [
 		],
 		"name": "revokeRole",
 		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_period",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_interval",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_value",
-				"type": "uint256"
-			}
-		],
-		"name": "setDividendProperties",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "startDividendPeriod",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "success",
-				"type": "bool"
-			}
-		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -787,7 +581,14 @@ const ABI3 = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "unpause",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	}
 ];
 
-export { ABI3, address3 }
+export { tokenSaleABI, tokenSaleAddress }

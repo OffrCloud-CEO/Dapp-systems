@@ -1,1 +1,0 @@
-https://tradix-react.vercel.app

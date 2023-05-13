@@ -1,25 +1,25 @@
-import { collection, getDocs } from 'firebase/firestore';
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { fireStore } from '../../../../firebase/sdk';
 import { contextData } from '../../dashboard';
 import Chart from "react-apexcharts";
 
 const LastSevenDaysUsers = () => {
-    const {coinBase} = useContext(contextData);
-    const [ daysObj, setDaysObj ] = useState([]);
+    const {  } = useContext(contextData);
+    const [daysObj, setDaysObj ] = useState([]);
     const [chartOptions, setChartOptions] = useState({
         options: {
             chart: {
                 id: "basic-bar"
             },
             xaxis: {
-                categories: [0,0,0,0,0,0]
+                categories: [0,0,0,0,0,0],
             }
         },
         series: [
             {
                 name: "series-1",
-                data: [0, 0, 0, 0, 0, 0]
+                data: [0, 0, 0, 0, 0, 0],
             }
         ]
     });
@@ -39,45 +39,69 @@ const LastSevenDaysUsers = () => {
         return {days, dayStrArr};
     }
 
+    function formatDate(dateString) {
+        const dateParts = dateString.split('/');
+        const year = dateParts[2];
+        const month = dateParts[0].padStart(2, '0');
+        const day = dateParts[1].padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     const fetchUsers = async () => {
-        const {days, dayStrArr} = getLast7Days()
-        const collectionSnap = await getDocs(collection(fireStore, "user_credentials"));
-        let tempArray = [];
-
-        collectionSnap.forEach(element => {
-            tempArray.push(element.data());
-        });
-
-        let tempHold = [];
-        let finalHold = [];
-
-        tempArray.forEach(element=>{
-            tempHold.push({date: element.date.slice(0, 10), value: 1});
-        });
-
-
-        days.forEach((item, idx)=>{
-            if (tempHold.find(i=> i.date === item)) {
-                let m = 0;
-                tempHold.map(i=> {
-                    if (i.date === item) {
-                        m += i.value;
+        const {days, dayStrArr} = getLast7Days();
+        const collectionSnap = collection(fireStore, "kycApplications");    
+        
+        onSnapshot(collectionSnap, (snap) => {
+            const collection = snap.docs;
+            let tempArray = [];
+            if (collection !== null) {
+                collection.forEach(element => {
+                    if ((element.data()).status === 1) {
+                        tempArray.push(element.data());
                     }
-                })
-                finalHold.push({day:dayStrArr[idx], sold: m});
-            }else{
-                finalHold.push({day:dayStrArr[idx], sold:0});
+                });
+
+                let tempHold = [];
+                let finalHold = [];
+
+                tempArray.forEach(element => {
+                    const dateString = formatDate(String(element.verifiedOn).slice(0, 9))
+                    tempHold.push({ date: dateString, value: 1 });
+                });
+
+                let countFound = 0;
+                let countNull = 0;
+                days.forEach((item, idx) => {
+                    if (tempHold.find(i => i.date === item)) {
+                        let m = 0;
+                        tempHold.map(i => {
+                            if (i.date === item) {
+                                m += Number(i.value);
+                            }
+                        });
+
+                        
+                        finalHold.push({ day: dayStrArr[idx], registered: m });
+                        countFound++;
+                    } else {
+                        finalHold.push({ day: dayStrArr[idx], registered: 0 });
+                        countNull++;
+                    }
+                });
+
+                if (countNull === 7) {
+                    setDaysObj([]);
+                }else{
+                    setDaysObj(finalHold);
+                }
+
             }
         });
-
-        setDaysObj(finalHold);
     }
 
     useEffect(()=>{
-        if (coinBase) {
-            fetchUsers();
-        }
-    }, [coinBase]);
+        fetchUsers();
+    }, []);
 
     useEffect(()=>{
         if (daysObj.length > 0) {
@@ -85,7 +109,7 @@ const LastSevenDaysUsers = () => {
             const seriesData = [];
             daysObj.forEach(element =>{
                 xAxis.push(element.day);
-                seriesData.push(element.sold);
+                seriesData.push(element.registered);
             });
 
             setChartOptions({
@@ -96,7 +120,7 @@ const LastSevenDaysUsers = () => {
                 options: {
                     chart: {
                         height: 350,
-                        type: 'line',
+                        type: 'bar',
                         toolbar: {
                             show: false,
                         }
@@ -162,12 +186,12 @@ const LastSevenDaysUsers = () => {
 
     return (
         <div className="kard exempt">
-            <div className="title">Registered Users (Last 7 days)</div>
+            <div className="title">KYCed Users (Last 7 days)</div>
             <div className="barchart">
                 <Chart
                     options={chartOptions.options}
                     series={chartOptions.series}
-                    type={"area"}
+                    type={"bar"}
                 />
             </div>
         </div>

@@ -1,10 +1,17 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { formatNum } from '../../../../useful/useful_tool';
 import { batchesContext } from './Batches';
+import { contextData } from '../../dashboard';
 
 const Batch = ({id, data}) => {
+    const { soldValue } = useContext(contextData);
     const {selected, setSelected} = useContext(batchesContext);
     const { endDate, startDate, status, batch_name, sold } = data;
+    const [tokenSold, setTokenSold] = useState(0);
+
+    useEffect(()=>{
+        setTokenSold(soldValue);
+    }, [soldValue]);
 
     function timestampToDateText(timestamp) {
         const date = new Date(timestamp);
@@ -32,7 +39,7 @@ const Batch = ({id, data}) => {
                 <div className="name">{batch_name}</div>
             </div>
             <div className="mid">
-                <div className="value">{formatNum((Number(sold) / (10**18)))}</div>
+                <div className="value">{status ? formatNum(((Number(sold) / (10**18)) + Number(tokenSold))) : formatNum((Number(sold) / (10**18)))}</div>
                 <label>Token sold</label>
             </div>
             <div className="info">

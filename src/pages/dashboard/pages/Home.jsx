@@ -1,159 +1,129 @@
-import { ethers } from 'ethers';
 import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useContext } from 'react';
-import { bigNum, formatEth, formatNum, formatNumFreeStyle, greetUser } from '../../../useful/useful_tool';
-import { address } from '../../../util/constants/tokenContract';
-import { ABI3, address3 } from '../../../util/constants/tokenHandlerContract';
+import { formatNum, formatNumFreeStyle, greetUser, isObjectEmpty } from '../../../useful/useful_tool';
 import GridCard from '../components/GridCard';
+import TransactionHashs from '../components/TransactionHashs';
 import { contextData } from '../dashboard';
+import { Link } from 'react-router-dom';
 
 const HomePage = () => {
-  const { contract, coinBase, storeDataUser } = useContext(contextData);
-  const [offr, setOffr] = useState(null);
+  const { rootData, dividendInitialInfo, tokenBalance, dividendSessionData, totalSupplyBalance, coinBase, storeDataUser, tokenSaleInfo, kycData, kycVerified, claimableData } = useContext(contextData);
+  const [percent, setPercent] = useState(0);
   const [coinInfo, setCoinInfo] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-
+  const [unclaimedDividends, setUnclaimedDividends] = useState(0);
+  const [session, setSessions] = useState(0);
+  const [sessionsTotal, setSessionsTotal] = useState(0);
+  const [canBuy, setCanBuy] = useState(false);
 
   useEffect(() => {
-    if (contract !== null) {
-      setOffr(contract[0]);
+    if (!isObjectEmpty(coinInfo)) {
+        const today = new Date();
+        const startDate = new Date(coinInfo?.txtStartDate);
+        const endDate = new Date(coinInfo?.txtEndDate);
+
+        setCanBuy((today > startDate) && (startDate < endDate));
     }
-  }, [contract]);
+}, [coinInfo]);
 
-  function formatDate(date) {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ];
+  useEffect(() => {
+    if (rootData.name !== null) {
+      const { name, symbol, decimals, beneficiaryAddress, contractAdress, cap, tokenPriceRates } = rootData;
+      const { status, endDateTxt, startDateTxt } = tokenSaleInfo;
+      const { paid, total } = dividendSessionData;
+      setSessions(paid);
+      setSessionsTotal(total);
 
-    const day = date.getDate();
-    const monthIndex = date.getMonth();
-    const year = date.getFullYear();
-
-    const monthName = months[monthIndex];
-
-    return `${day} ${monthName}, ${year}`;
-  }
-
-
-  const fetchOFFR = async () => {
-    if (coinBase) {
-      setLoading(true);
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-      const signer = await provider.getSigner();
-      const user = await signer.getAddress();
-
-      const tokenHandler = new ethers.Contract(address3, ABI3, signer);
-
-      const name = await offr.name();
-      const symbol = await offr.symbol();
-      const max = await offr.totalSupply();
-      const decimals = await offr.decimals();
-      const totalSupply = await offr.totalSupply();
-      let cap = await offr.cap();
-      cap = bigNum(cap);
-      const beneficiaryAddress = await offr._beneficiary();
-      const contractAdress = address;
-      const myBalance = await offr.balanceOf(coinBase?.coinbase);
-      const holderList = await offr.getHolderList();
-
-      // TokenHandler Data
-      const isSaleOpen = await tokenHandler.tokensale_open();
-      const isHolder = holderList.includes(user);
-      const salesEndDate = Number(await tokenHandler.getSaleEndDate());
-
-      const txtEndDate = formatDate(new Date(salesEndDate));
-
-      const isDividendPeriod = await tokenHandler.isDividendPaymentPeriodActive();
+      setPercent(dividendInitialInfo?.percentValue);
 
       const data = {
         name,
         symbol,
-        max,
         decimals,
-        totalSupply,
+        totalSupply: totalSupplyBalance,
         beneficiaryAddress,
         contractAdress,
-        myBalance,
+        myBalance: tokenBalance,
         cap,
-        isSaleOpen,
-        txtEndDate,
-        isHolder,
-        isDividendPeriod,
+        isSaleOpen: status,
+        txtEndDate: endDateTxt,
+        txtStartDate: startDateTxt,
+        isKycVerified: kycVerified,
+        isDividendPeriod: dividendInitialInfo.status,
+        divIntervalValue: dividendInitialInfo.interval,
+        tokenPriceRates: tokenPriceRates,
       }
+
       setCoinInfo(data);
-      setLoading(false);
     }
-  }
+
+  }, [rootData, tokenSaleInfo, kycVerified, dividendInitialInfo, dividendSessionData]);
+
 
   useEffect(() => {
-    if (offr !== null) {
-      fetchOFFR();
-    }
-  }, [offr, coinBase]);
-
+    const { claimable } = claimableData;
+    setUnclaimedDividends(claimable);
+  }, [claimableData]);
 
 
   return (
     <div className="dash_section">
-      {loading && <div className="pending">
-        <img src="https://gineousc.sirv.com/Images/sp.gif" alt="" />
-      </div>}
       <div className="greet">
-        <div className="title">{greetUser()} {storeDataUser ? ((storeDataUser?.name).split(" ")[0]) : "@firstname"}, </div>
+        <div className="title">{greetUser()} {storeDataUser ? ((`@${storeDataUser.displayname}`)) : "@firstname"}, </div>
         <div className="tags">
-          <div className="img">
+          <Link to={"/dashboard/profile"} className="img">
             {storeDataUser && <img src={storeDataUser?.dp} alt="" />}
             {!storeDataUser && <img src="https://gineousc.sirv.com/Images/Infinite.gif" alt="" />}
-          </div>
+          </Link>
         </div>
       </div>
       <label>Your Wallet</label>
       <div className="dash-row home">
         <div className="div-3">
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/money%20(2).svg"} detail={`${coinInfo ? formatNumFreeStyle((coinInfo?.myBalance / (10 ** 18))) : ''} ${coinInfo && coinInfo.symbol}`} p={`Your ${coinInfo?.symbol} Balance`} />
+          <GridCard ico={"https://gineousc.sirv.com/Images/icons/id-verified.png"} detail={kycData?.status === 0 ? `Pending` : kycData?.status === 1 ? `Verified` : kycData?.status === 2 ? 'Declined' : 'Not Enrolled'} p={`KYC Status`} kyc={kycData?.status >= 0 ? kycData?.status : 2} />
+          <GridCard ico={"https://gineousc.sirv.com/Images/icons/money%20(2).svg"} detail={`${coinInfo ? formatNumFreeStyle((coinInfo.myBalance / (10 ** 18))) : ''} ${coinInfo && coinInfo.symbol}`} p={`Your ${coinInfo?.symbol} Balance`} />
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/wallet.svg"} type={'address'} detail={coinBase ? coinBase?.coinbase : "0x00"} p={"Wallet Address"} />
         </div>
         {coinInfo?.isSaleOpen && <label>Token Sale Information</label>}
-        {coinInfo?.isSaleOpen &&<div className="div-3">
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-land-sales-80.png"} detail={`${coinInfo.totalSupply === coinInfo.cap ? "Sold": "Ongoing"}`} type={`${coinInfo.totalSupply === coinInfo.cap ? "" : "status"}`} p={"Token Sale Status"} />
+        {coinInfo?.isSaleOpen && <div className="div-3">
+          <GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-land-sales-80.png"} detail={`${coinInfo.totalSupply === coinInfo.cap ? "Sold" ? canBuy : "Not on Sale" : "Ongoing"}`} type={`${coinInfo.totalSupply === coinInfo.cap && canBuy  ? "" : "status"}`} p={"Token Sale Status"} />
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/on.png"} detail={coinInfo?.txtEndDate} p={"Token Sale Ends"} />
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-buy-100.png"} animated={"https://gineousc.sirv.com/Images/icons/icons8-shopping-cart.gif"} detail={``} p={``} type={`btn`} />
+          {kycData?.status === 1 && <GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-buy-100.png"} animated={"https://gineousc.sirv.com/Images/icons/icons8-shopping-cart.gif"} detail={``} p={``} bType={0} type={`btn`} />}
         </div>}
         {coinInfo && coinInfo?.isDividendPeriod && <label>Dividend Information</label>}
-        {coinInfo && coinInfo?.isDividendPeriod &&<div className="div-3">
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-land-sales-80.png"} detail={`${coinInfo?.isHolder && coinInfo?.myBalance > 0 ? "Valid Holder": "Invalid Holder"}`} type={`${coinInfo?.isHolder && coinInfo?.myBalance > 0 ?  "status" : ""}`} p={"Holder Status"} />
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/on.png"} detail={coinInfo?.txtEndDate} p={"Next Dividend Payment"} />
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-client-64.png"} detail={`${(formatNum((coinInfo?.myBalance / (10**18)) * 0.05))} USDC`} p={`Dividend Amount`} />
+        {coinInfo && coinInfo?.isDividendPeriod && <div className="div-3">
+          <div className='kard'>
+            <div className="tag">Session(s)<img src="https://gineousc.sirv.com/Images/icons/external-fraction-math-vol-1-outline-outline-black-m-oki-orlando.png" alt="" /></div>
+            <div className="value">
+              {percent > 0 ? <div className="hang" data-hang={`of ${sessionsTotal}`}>
+                {session}
+              </div> : "---"}
+            </div>
+          </div>
+          {<GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-client-64.png"} detail={`${(formatNum(((coinInfo?.myBalance / (10 ** 18)) * (1 / Number(coinInfo?.tokenPriceRates))) * (percent / 100000)))} USDC`} p={`Dividends Per Session`} />}
+          {unclaimedDividends > 0 && <GridCard ico={"https://gineousc.sirv.com/Images/icons/money%20(2).svg"} detail={``} bType={1} type={`btn`} p={"Claim your Dividends"} />}
         </div>}
-        <label>Coin Informations</label> 
+        <label>Coin Informations</label>
         <div className="div-3">
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/info.svg"} detail={coinInfo?.name} p={"Token name"} />
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/coin.svg"} detail={coinInfo?.symbol} p={"Token symbol"} />
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/analytics.svg"} detail={coinInfo ? formatNumFreeStyle(coinInfo?.cap) : ''} p={"Max Supply"} />
+          <GridCard ico={"https://gineousc.sirv.com/Images/icons/coins.svg"} detail={`${coinInfo ? (coinInfo?.totalSupply > 0 ? ((formatNumFreeStyle((coinInfo.totalSupply)))) : '0') : ''}`} p={"Total supply"} />
         </div>
         <div className="div-3">
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/dc.png"} detail={coinInfo?.decimals} p={"Decimals"} />
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/tr.png"} detail={`1 USDC`} p={`Price`} />
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/coins.svg"} detail={`${coinInfo ? (coinInfo?.totalSupply > 0 ? ((formatNumFreeStyle((coinInfo?.totalSupply)))) : '0') : ''}`} p={"Total supply"} />
+          <GridCard ico={"https://gineousc.sirv.com/Images/icons/tr.png"} detail={`$ ${Number((1 / Number(coinInfo?.tokenPriceRates))).toLocaleString()}`} p={`Price`} />
+          <GridCard ico={"https://gineousc.sirv.com/Images/icons/analytics.svg"} detail={coinInfo ? formatNumFreeStyle(coinInfo?.cap) : ''} type={'cap'} p={"Max Supply"} />
         </div>
         <div className="div-2">
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/wallet.svg"} type={'address'} detail={"0x35CB38345f6f6FEfFa5AF922e5B5c08928F29c91"} p={"Beneficiary address"} />
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/wallet.svg"} type={'address'} detail={coinInfo?.contractAdress} p={"Token Contract Address"} />
+        </div>
+
+        <div className="info-tab">
+          <div className="information">
+            <TransactionHashs maxL={5} methods={[1, 9, 8, 3]} />
+          </div>
         </div>
       </div>
 

@@ -3,7 +3,7 @@ import { moneyFormat } from '../../../../../useful/useful_tool';
 import { fundContext } from '../../card/FundContract';
 
 const Confirmation = () => {
-  const { fundingStatus, fundedAmount } = useContext(fundContext);
+  const { fundingStatus, fundedAmount, errMsg } = useContext(fundContext);
 
   return (
     <div className="div-carosel c">
@@ -17,7 +17,7 @@ const Confirmation = () => {
         <br />
         <img className='ld' src="https://gineousc.sirv.com/Images/icons/animated/1140-error-outline.gif" alt="failed" />
         <div className="title">An Error Occured</div>
-        <div className="p">This maybe as a result of an Insuffient Balance or User rejected the transaction.</div>
+        <div className="p">{errMsg}</div>
       </div>}
       <br />
 

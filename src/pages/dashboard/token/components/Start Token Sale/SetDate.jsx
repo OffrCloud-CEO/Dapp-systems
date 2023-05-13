@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { isNameValid } from '../../../../../useful/useful_tool';
+import { escapeString } from '../../../../../useful/useful_tool';
 import { tokenSaleContext } from '../../card/startTokenSale';
 
 const SetDate = () => {
@@ -67,7 +67,7 @@ const SetDate = () => {
 
     
     const sethandler = () =>{
-        if (isNameValid(batchName) && batchName.length > 2) {
+        if (escapeString(batchName) && batchName.length > 2) {
             setBatchNameTxt(batchName);
             setCanEdit(false);
             setValid({...valid, name: 1});
@@ -101,7 +101,7 @@ const SetDate = () => {
     }, [dateData]);
 
     useEffect(()=>{
-        if (isNameValid(batchName) && batchName.length > 2) {
+        if (escapeString(batchName) && batchName.length > 2) {
             setValid({...valid, name: 0});
         }else{
             setValid({...valid, name: 2});

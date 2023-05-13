@@ -1,6 +1,6 @@
-const address2 = '0xD3077255bE7183a690E2E1Af77581DC5303D3D04';
+const usdcAddress = '0xD3077255bE7183a690E2E1Af77581DC5303D3D04';
 
-const ABI2 = [
+const usdcABI = [
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -278,4 +278,4 @@ const ABI2 = [
 	}
 ];
 
-export { address2, ABI2 }
+export { usdcABI, usdcAddress }

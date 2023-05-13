@@ -4,24 +4,27 @@ import { contextData } from '../../dashboard';
 import { dividendContext } from '../../pages/Dividend Management';
 import Confirmation from '../components/Dividend Properties Setting/confirmation';
 import Setting from '../components/Dividend Properties Setting/Setting';
+import VerifyStart from '../components/Dividend Properties Setting/VerifyStart';
+import CloseBTN from '../components/Dividend Properties Setting/closeBTN';
 
 export const dividendPropertiesSettingContext = React.createContext();
 const DividendSettings = () => {
-    const { setDividendProperties, coin, setUpdatedDividendProperties } = useContext(dividendContext);
-    const { setTransactions, transactions, batchNameTxt } = useContext(contextData);
+    const { setStartingDividendsPeriod } = useContext(dividendContext);
+    const { rootData } = useContext(contextData);
     const [pending, setPending] = useState(false);
     const [updateStatus, setUpdateStatus] = useState(false);
+    const [divProperties, setDivProperties] = useState({
+        interval: 0,
+        period: 0,
+        percent: 0
+    });
     const [currentPage, setCurrentPage] = useState(0);
-
-    function closeButtonHandler() {
-        setDividendProperties(false);
-        updateStatus && setUpdatedDividendProperties(true);
-    }
+    const [errMsg, setErrMsg] = useState('');
 
     return (
-        <dividendPropertiesSettingContext.Provider value={{ pending, currentPage, updateStatus, setTransactions, transactions, batchNameTxt, setPending, coin, setCurrentPage, setUpdateStatus }}>
+        <dividendPropertiesSettingContext.Provider value={{ errMsg, setErrMsg, divProperties, setDivProperties, rootData, pending, currentPage, updateStatus, setPending, setCurrentPage, setUpdateStatus }}>
             <div className="cover">
-                <Toaster 
+                <Toaster
                     toastOptions={{
                         style: {
                             background: '#363636',
@@ -35,12 +38,14 @@ const DividendSettings = () => {
                             <div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                         </div></div>
                     </div>}
-                    {!pending && <div className="close" onClick={closeButtonHandler}>x</div>}
-                    {currentPage == 0 && <div className="title">Dividend Properties</div>}
-                    <div className="carosel">
-                        {currentPage == 0 && <Setting />}
-                        {currentPage == 1 && <Confirmation/>}
-                    </div>
+                    {!pending && <CloseBTN control={setStartingDividendsPeriod}/>}
+                    {currentPage == 0 && <div className="title">Set Dividend Properties</div>}
+                    
+                    <br />
+                    {currentPage == 0 && <Setting />}
+                    {currentPage == 1 && <VerifyStart />}
+                    {currentPage == 2 && <Confirmation />}
+                    <br />
                 </div>
             </div>
         </dividendPropertiesSettingContext.Provider>

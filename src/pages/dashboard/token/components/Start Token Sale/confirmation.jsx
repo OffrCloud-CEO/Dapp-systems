@@ -19,8 +19,10 @@ const Confirmation = () => {
     <div className="div-carosel c">
       {transactionStatus && <div className="con">
         <img className='ld' src="https://gineousc.sirv.com/Images/icons/animated/1103-confetti-outline.gif" alt="" />
-        <div className="title good">Token Sale Has Started</div>
-        <div className="p">You've initiated the Token Sale from <b>{dateText.startDate}</b> to <b>{dateText.endDate}</b></div>
+        <div className="title md">Token Sale Has Started</div>
+        <div className="c">
+          <div className="p impo">You've initiated the Token Sale from <b>{dateText.startDate}</b> to <b>{dateText.endDate}</b></div>
+        </div>
       </div>}
       {!transactionStatus && <div className="con">
         <img className='ld' src="https://gineousc.sirv.com/Images/icons/animated/1140-error-outline.gif" alt="" />

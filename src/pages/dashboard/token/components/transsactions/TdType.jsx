@@ -5,23 +5,47 @@ const TdType = ({type}) => {
     const [classType, setClassType] = useState('');
 
     useEffect(()=>{
-        switch (type) {
-            case 1:
-                setText("Buytokens");
-                setClassType('buy')
-                break;
+        switch (type) { 
             case 2:
-                setText("Transfer");
-                setClassType('transfer')
+                setText("startSale");
+                setClassType('cni');
+                break;
+            case 1:
+                setText("buyTokens");
+                setClassType('buy');
                 break;
             case 3:
-                setText("contract interaction");
+                setText("payDividends");
                 setClassType('cni');
+                break;
+            case 4:
+                setText("salesEnded");
+                setClassType('err');
+                break;
+            case 5:
+                setText("releaseFund"); 
+                setClassType('cni');
+                break;
+            case 6:
+                setText("dividendStart");
+                setClassType('cni');
+                break;
+            case 7:
+                setText("dividendEnd");
+                setClassType('err');
+                break;
+            case 8:
+                setText("claimDividends");
+                setClassType('transfer');
+                break;
+            case 9:
+                setText("KYCed");
+                setClassType('approve');
                 break;
         
             default:
-                setText("Approve");
-                setClassType('approve')
+                setText("Transaction");
+                setClassType('approve');
                 break;
         }
     }, [type]);

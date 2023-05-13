@@ -1,4 +1,4 @@
-import { address3, ABI3 } from './constants/tokenHandlerContract';
+import { address3, ABI3 } from './constants/tokenSaleContract';
 import { ethers } from 'ethers';
 
 

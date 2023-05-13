@@ -1,19 +1,21 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import TransactionHashs from '../components/TransactionHashs';
 import TokenSale from '../token/TokenSale';
+import { contextData } from '../dashboard';
 
 export const walletData = React.createContext();
 
 const Wallet = () => {
+  const { loading } = useContext(contextData);
   const [mini, setMini] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [userBalance, setUserBalance] = useState(0);
   const [onSale, setOnSale] = useState(false);
-
+  const [canBuy, setCanBuy] = useState(false);
 
   const buyRef = useRef();
   const transferRef = useRef();
   return (
-    <walletData.Provider value={{ setMini, onSale, setOnSale, setLoading }}>
+    <walletData.Provider value={{ userBalance, setUserBalance, setMini, mini, onSale, setOnSale, setCanBuy }}>
       <div className="dash_section">
         <label>Token Sale</label>
         {loading && <div className="pending">
@@ -26,7 +28,7 @@ const Wallet = () => {
                 Sales Status
                 <img src="https://gineousc.sirv.com/Images/icons/on.png" alt="" />
               </div>
-              <div className={`value info ${mini !== null ? `${mini.status ? "good" : "bad"}` : ``}`}>{mini !== null ? `${mini.status ? "Ongoing" : "Not on Sale"}` : `N/A`}</div>
+              <div className={`value info ${mini !== null ? `${mini.status && canBuy ? "good" : "bad"}` : ``}`}>{mini !== null ? `${mini.status && canBuy ? "Ongoing" : "Not on Sale"}` : `N/A`}</div>
             </div>
             <div className="kard">
               <div className="tag">
@@ -47,7 +49,7 @@ const Wallet = () => {
         <div className="grid-system">
           <TokenSale buyRef={buyRef} transferRef={transferRef} />
         </div>
-        <TransactionHashs maxL={10} methods={[1,2]}  />
+        <TransactionHashs maxL={10} methods={[1]}  />
       </div>
     </walletData.Provider>
   );

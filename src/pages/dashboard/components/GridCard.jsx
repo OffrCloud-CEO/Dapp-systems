@@ -1,13 +1,12 @@
 import React from 'react'
 import { useState } from 'react'
+import { formatLargeNumber } from '../../../useful/useful_tool';
+import { Link } from 'react-router-dom';
 
-const GridCard = ({ ico, detail, p, type, animated }) => {
+const GridCard = ({ ico, detail, p, type, animated, kyc, bType }) => {
     const [icon, setIcon] = useState(ico);
-    const [dataCopy, setDataCopy] = useState("click to copy")
+    const [dataCopy, setDataCopy] = useState("click to copy");
 
-    const goToBuyPageHandler = () => {
-        window.location.href = "/dashboard/wallet";
-    }
 
     const copyToClipboard = (str) => {
         const el = document.createElement('textarea');  // create a textarea element
@@ -39,12 +38,12 @@ const GridCard = ({ ico, detail, p, type, animated }) => {
     return (
         <div className={`kard`} onMouseOver={() => type === "btn" && setIcon(animated)} onMouseLeave={mouseLeaveHandler}>
             <div className="tag">{p}<img src={icon} alt="" /></div>
-
-            {type !== "btn" && <div data-alert={dataCopy} className={`value ${type === "address" ? "address" : "info"} ${type === "status" ? "good" : "info"}`} onClick={() => type === "address" && copyToClipboard(detail)}>
-                {detail ? `${detail}` : <img src="https://gineousc.sirv.com/Images/sp.gif" alt="" />}
+            {type !== "btn" && <div data-alert={dataCopy} className={`value ${type === "address" ? "address" : "info"} ${type === "status" ? "good" : "info"} ${kyc !== undefined && `${kyc === 1 && "good"} ${kyc === 2 && "bad"} ${kyc === 0 && "wait"}`}` } onClick={() => type === "address" && copyToClipboard(detail)}>
+                {detail && `${type === "cap" ? formatLargeNumber(((String(detail)).replace(/,/g, '')), "max") : detail}`}{kyc == true && <img src="https://gineousc.sirv.com/Images/icons/verified-account--v1.png" alt="verified" />}
             </div>}
-            {type === "btn" && <div className={`value ${type === "address" ? "address" : "info"} ${type === "status" ? "good" : "info"}`}>
-                {<div className="btnx" onClick={goToBuyPageHandler}>Buy Token</div>}
+            {type === "btn" && <div className={`value`}>
+                {bType === 0 && <Link to={"wallet"} className='btnx'>Buy Token</Link>}
+                {bType === 1 && <Link to={"mydividend"} className='btnx'>Claim now</Link>}
             </div>}
         </div>
     )

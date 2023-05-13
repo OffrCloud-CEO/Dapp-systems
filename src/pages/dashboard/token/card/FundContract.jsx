@@ -3,22 +3,26 @@ import { Toaster, useToaster } from 'react-hot-toast';
 import { dividendContext } from '../../pages/Dividend Management';
 import Confirmation from '../components/FundContract/confirmation';
 import SetAmount from '../components/FundContract/SetAmount';
+import VerifyPayDividends from '../components/FundContract/VerifyPayDividends';
+import { contextData } from '../../dashboard';
 
 export const fundContext = React.createContext();
 const FundContract = () => {
-    const { setFundingContract, setFundedContract, coin, } = useContext(dividendContext);
+    const { setPayingDividends, coin } = useContext(dividendContext);
+    const { usdcBalance } = useContext(contextData);
     const [pending, setPending] = useState(false);
     const [fundingStatus, setFundingStatus] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const [fundedAmount, setFundedAmount] = useState(0);
-
+    const [amountToFund, setAmountToFund] = useState(0);
+    const [errMsg, setErrMsg] = useState("");
 
     const closeBtnHandler = () => {
-        setFundingContract(false);
-        fundingStatus && setFundedContract(true);
+        setPayingDividends(false);
     }
+    
     return (
-        <fundContext.Provider value={{ fundedAmount, setFundedAmount, fundingStatus, setPending, setCurrentPage, coin, setFundingStatus }}>
+        <fundContext.Provider value={{ amountToFund, setAmountToFund, errMsg, setErrMsg, usdcBalance, fundedAmount, setFundedAmount, fundingStatus, setPending, setCurrentPage, coin, setFundingStatus }}>
             <div className="cover">
                 <Toaster 
                     toastOptions={{
@@ -39,7 +43,8 @@ const FundContract = () => {
                     {currentPage == 0 && <div className="title">Add fund to contract</div>}
                     <div className="carousel">
                         {currentPage == 0 && <SetAmount />}
-                        {currentPage == 1 && <Confirmation />}
+                        {currentPage == 1 && <VerifyPayDividends />}
+                        {currentPage == 2 && <Confirmation />}
                     </div>
 
                 </div>

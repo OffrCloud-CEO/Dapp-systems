@@ -8,8 +8,9 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { getDataFromLogin } from '../../../store/reducers/userDetails';
-import getWeb3 from '../../../util/getWeb3';
-import ConnectionModal from "./connectionModal"
+import { ethers } from 'ethers';
+import { toast } from 'react-hot-toast';
+
 const FormPart = () => {
     const emailRef = useRef();
     const nameRef = useRef();
@@ -23,7 +24,6 @@ const FormPart = () => {
     const [imageUrl, setImageUrl] = useState('');
 
     const [walletAddress, setWalletAddress] = useState('');
-    const [gender, setGender] = useState(0);
     const [connected, setConnected] = useState(false);
     const [connecting, setConnecting] = useState(false);
     const [proceeding, setProceeding] = useState(false);
@@ -38,6 +38,23 @@ const FormPart = () => {
 
     const [accountExist, setAccountExist] = useState(false);
 
+    function generateUsername() {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+        let username = 'user';
+      
+        // Generate a random 4-digit number
+        const randomNumber = Math.floor(Math.random() * 10000);
+        username += randomNumber.toString().padStart(4, '0');
+      
+        // Add two random letters
+        for (let i = 0; i < 2; i++) {
+          const randomIndex = Math.floor(Math.random() * letters.length);
+          username += letters[randomIndex];
+        }
+      
+        return username;
+    }
 
     const createAccountHandler = async () => {
         if (!proceeding) {
@@ -46,20 +63,6 @@ const FormPart = () => {
                 if (lenName.length > 1) {
                     if (isValidEmail(emailRef.current.value)) {
                         setProceeding(true);
-
-                        let genderTxt = '';
-                        switch (gender) {
-                            case 1:
-                                genderTxt = "female";
-                                break;
-                            case 2:
-                                genderTxt = "non-binary";
-                                break;
-
-                            default:
-                                genderTxt = 'male';
-                                break;
-                        }
 
                         const transactionDate = new Date();
                         const timeStamp = transactionDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -70,10 +73,20 @@ const FormPart = () => {
                         await setDoc(doc(userRef, `${walletAddress}`), {
                             name: nameRef.current.value,
                             email: emailRef.current.value,
-                            gender: genderTxt,
                             profile_picture: dp(),
                             wallet_Address: walletAddress,
-                            date: timeStamp,
+                            created: timeStamp,
+                            displayname: generateUsername(),
+                            emailstatus: false,
+                            dob: null,
+                            nationality: '',
+                            mobile: '',
+                            address: [],
+                            city: '',
+                            state: '',
+                            zipcode: '',
+                            kyc: false,
+                            
                         });
                         setProceeding(false);
                         proceedHandler();
@@ -100,18 +113,6 @@ const FormPart = () => {
             setEmailText(userInfo.email);
             setNameText(userInfo.name);
             setImageUrl(userInfo.profile_picture);
-            switch (userInfo.gender) {
-                case "female":
-                    setGender(1);
-                    break;
-                case "non-binary":
-                    setGender(2);
-                    break;
-
-                default:
-                    setGender(0);
-                    break;
-            }
             checkBoxRef.current.checked = true;
         } else {
             // doc.data() will be undefined in this case
@@ -129,19 +130,25 @@ const FormPart = () => {
     const connectWallet = async () => {
         setConnecting(true);
 
-        const web3Conneect = getWeb3;
+        try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-        await web3Conneect.then(result =>{
-            setWalletAddress(result.coinbase);
-        })
+            const signer = await provider.getSigner();
+            const user = await signer.getAddress();
+            setWalletAddress(user);
+
+            setConnected(true);
+        } catch (error) {
+            console.log(error)
+            throw Error(error)
+        }
         
         setConnecting(false);
-        setConnected(true);
     }
 
     useEffect(() => {
         if (walletAddress !== '') {
-            fetchCredentials();
+            fetchCredentialsWatch();
         }
     }, [walletAddress]);
 
@@ -149,11 +156,10 @@ const FormPart = () => {
         const data = {
             email: emailText,
             name: nameText,
-            gender: gender,
             dp: imageUrl,
         }
         setUserInfo(data);
-    }, [emailText, nameText, gender, imageUrl]);
+    }, [emailText, nameText, imageUrl]);
 
     const proceedHandler = () => {
         if (!proceeding) {
@@ -168,17 +174,43 @@ const FormPart = () => {
         }
     }
 
+    const connectWatch = ()=>{
+        const promise = connectWallet();
+        toast.promise(promise, {
+            loading: "Connecting to Your Wallet",
+            success: "Wallet is connected.",
+            error: "An error occured!"
+        });
+    }
+
+    const fetchCredentialsWatch = ()=>{
+        const promise = fetchCredentials();
+        toast.promise(promise, {
+            loading: "Fetching credentials",
+            success: "credentials found.",
+            error: "An error occured!"
+        });
+    }
+
+    const createAccountWatch = ()=>{
+        const promise = createAccountHandler();
+        toast.promise(promise, {
+            loading: "Creating an Account for you",
+            success: "Your account is created",
+            error: "An error occured!"
+        });
+    }
+
 
     return (
         <section className="formPart">
             {/* <ConnectionModal /> */}
-            <div className="title">Proceed to Dashboard</div>
             <section>
                 <div className="form-g">
                     <label>
                         {connected ? "Connected to:" : "Connect your wallet!"}
                     </label>
-                    {!connected && <div className={`btnx`} onClick={connectWallet}>
+                    {!connected && <div className={`btnx`} onClick={connectWatch}>
                         {!connecting && "Connect wallet"}
                         {connecting && <img src="https://gineousc.sirv.com/Images/Circles-menu-3.gif" alt="" />}
                     </div>}
@@ -193,28 +225,14 @@ const FormPart = () => {
                         <label>Full Name:</label>
                         <input type="Text" className="inp" disabled={accountExist} ref={nameRef} value={nameText} onChange={e => setNameText(e.target.value)} name='name' placeholder="What's your name?" />
                     </div>
-                    <div className="form-g">
-                        <label>Gender:</label>
-                        <div className={`r-3 ${accountExist && 'exist'}`}>
-                            <div className={`${gender === 0 && 'active'}`} onClick={() => setGender(0)}>
-                                <div className="p">Male</div>
-                            </div>
-                            <div className={`${gender === 1 && 'active'}`} onClick={() => setGender(1)}>
-                                <div className="p">Female</div>
-                            </div>
-                            <div className={`${gender === 2 && 'active'}`} onClick={() => setGender(2)}>
-                                <div className="p">Non-binary</div>
-                            </div>
-                        </div>
-                    </div>
                     <div className={`form-g ${hasError.agree && 'error'}`}>
                         <br />
                         <div className="r">
                             <input type="checkbox" disabled={accountExist} ref={checkBoxRef} />
-                            <div className="p" onClick={() => checkBoxRef.current.click()}>I agree to OffrToken's Terms & Conditions</div>
+                            <div className="p" onClick={() => checkBoxRef.current.click()}>I agree to OffrToken's <a className='url' href="">Terms & Conditions</a></div>
                         </div>
                         <br />
-                        {!accountExist && <div className={`btnx`} onClick={createAccountHandler}>
+                        {!accountExist && <div className={`btnx`} onClick={createAccountWatch}>
                             {!proceeding && "Create account"}
                             {proceeding && <img src="https://gineousc.sirv.com/Images/Spinner-2.gif" alt="" />}
                         </div>}

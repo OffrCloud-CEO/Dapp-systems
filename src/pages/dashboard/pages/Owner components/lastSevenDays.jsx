@@ -1,11 +1,11 @@
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react'
 import { fireStore } from '../../../../firebase/sdk';
 import { contextData } from '../../dashboard';
 import Chart from "react-apexcharts";
 
-const LastSevenDays = () => {
-    const { coinBase, batchData } = useContext(contextData);
+const LastSevenDays = ({status}) => {
+    const { tokenSaleInfo, rootData } = useContext(contextData);
     const [ daysObj, setDaysObj ] = useState([]);
     const [chartOptions, setChartOptions] = useState({
         options: {
@@ -24,6 +24,14 @@ const LastSevenDays = () => {
         ]
     });
 
+    function formatDate(dateString) {
+        const dateParts = dateString.split('/');
+        const year = dateParts[2];
+        const month = dateParts[0].padStart(2, '0');
+        const day = dateParts[1].padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     function getLast7Days() {
         const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         const dayStrArr = [];
@@ -41,47 +49,54 @@ const LastSevenDays = () => {
 
     const fetchTransactions = async () => {
         const {days, dayStrArr} = getLast7Days()
-        const collectionSnap = await getDocs(collection(fireStore, "user_transactions"));
-        let tempArray = [];
 
-        collectionSnap.forEach(element => {
-            const data = element.data();
+        onSnapshot(collection(fireStore, "user_transactions"), (collectionSnap) => {
+            if (collectionSnap !== null) {
 
-            if (data.batch === batchData.batch_name) {
-                tempArray.push(data);
-            }
-        });
+                let tempArray = [];
 
-        let tempHold = [];
-        let finalHold = [];
+                collectionSnap.forEach(element => {
+                    const data = element.data();
 
-        tempArray.forEach(element=>{
-            if (element.type === 1) {
-                tempHold.push({date: element.timestamp.slice(0, 10), value: (element.amount / (10**18))});
-            }
-        });
-
-        days.forEach((item, idx)=>{
-            if (tempHold.find(i=> i.date === item)) {
-                let m = 0;
-                tempHold.map(i=> {
-                    if (i.date === item) {
-                        m += i.value;
+                    if (data.batch_name === tokenSaleInfo.batchName) {
+                        tempArray.push(data);
                     }
-                })
-                finalHold.push({day:dayStrArr[idx], sold: m});
-            }else{
-                finalHold.push({day:dayStrArr[idx], sold:0});
+                });
+
+                let tempHold = [];
+                let finalHold = [];
+
+                tempArray.forEach(element => {
+                    if (element.type === 1) {
+                        const timestamp = new Date(element.timestamp).toLocaleDateString();
+                        tempHold.push({ date: formatDate(timestamp), value: (element.amount) });
+                    }
+                });
+
+                days.forEach((item, idx) => {
+                    if (tempHold.find(i => i.date === item)) {
+                        let m = 0;
+                        tempHold.map(i => {
+                            if (i.date === item) {
+                                m += Number(i.value);
+                            }
+                        })
+                        finalHold.push({ day: dayStrArr[idx], sold: m });
+                    } else {
+                        finalHold.push({ day: dayStrArr[idx], sold: 0 });
+                    }
+                });
+                setDaysObj(finalHold);
             }
+
         });
-        setDaysObj(finalHold);
     }
 
     useEffect(()=>{
-        if (coinBase && batchData !== null) {
+        if (rootData.batchName !== null) {
             fetchTransactions();
         }
-    }, [coinBase, batchData]);
+    }, [tokenSaleInfo, rootData]);
 
     useEffect(()=>{
         if (daysObj.length > 0) {
@@ -149,7 +164,7 @@ const LastSevenDays = () => {
                     xaxis: {
                         categories: xAxis,
                     },
-                    colors: ["#3856ff"],
+                    colors: [`${status ? "#3856ff": "#c47e16"}`],
                     dataLabels: {
                         formatter: function (value) {
                           return Number(value.toFixed()).toLocaleString();
@@ -166,7 +181,7 @@ const LastSevenDays = () => {
 
     return (
         <div className="kard exempt">
-            <div className="title">Last 7 days ({batchData.batch_name} Sale)</div>
+            <div className="title">Last 7 days ({tokenSaleInfo.batchName})</div>
             <div className="barchart">
                 <Chart
                     options={chartOptions.options}

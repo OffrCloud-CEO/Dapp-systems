@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { dividendPropertiesSettingContext } from '../../card/DividendSettings';
 
 const Confirmation = () => {
-    const { updateStatus,  } = useContext(dividendPropertiesSettingContext);
+    const { updateStatus, errMsg } = useContext(dividendPropertiesSettingContext);
 
   return (
     <div className="div-carosel c">
@@ -16,7 +16,7 @@ const Confirmation = () => {
         <br />
         <img className='ld' src="https://gineousc.sirv.com/Images/icons/animated/1140-error-outline.gif" alt="failed" />
         <div className="title">An Error Occured</div>
-        <div className="p">This maybe as a result of an Insuffient Balance or User rejected the transaction.</div>
+        <div className="p">{errMsg}</div>
       </div>}
 
     </div>

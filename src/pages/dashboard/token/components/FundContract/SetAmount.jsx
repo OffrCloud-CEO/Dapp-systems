@@ -1,29 +1,39 @@
-import { ethers } from 'ethers';
-import React, { useContext, useEffect, useState } from 'react';
-import { toast } from 'react-hot-toast';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { formatNumFreeStyle, moneyFormat, toEth } from '../../../../../useful/useful_tool';
-import { ABI3, address3 } from '../../../../../util/constants/tokenHandlerContract';
-import { ABI2, address2 } from '../../../../../util/constants/usdcContract';
 import { contextData } from '../../../dashboard';
 import { fundContext } from '../../card/FundContract';
 
 const SetAmount = () => {
-    const { setPending, setCurrentPage, coin, setFundingStatus, setFundedAmount } = useContext(fundContext);
-    const { setTransactions, transactions, batchData } = useContext(contextData);
+    const { setCurrentPage, coin, setAmountToFund, usdcBalance } = useContext(fundContext);
     const [amount, setAmount] = useState("0");
     const [canProceed, setCanProceed] = useState(false);
     const [targetValue, setTargetValue] = useState(0);
 
+    const btnRef0 = useRef();
+    const btnRef01 = useRef();
+    const btnRef02 = useRef();
+    const btnRef03 = useRef();
+    const btnRef04 = useRef();
+    const btnRef05 = useRef();
+    const btnRef06 = useRef();
+    const btnRef07 = useRef();
+    const btnRef08 = useRef();
+    const btnRef09 = useRef();
+    const btnRefBack = useRef();
+
     useEffect(()=>{
         if (coin !== null) {
             const { divPercent, totalSupply, divCount, divIntervalCountValue } = coin;
-            const targetUSDC = divCount === (divIntervalCountValue-1) ? totalSupply : totalSupply * (divPercent/100);
+            const lastDividendSession = divIntervalCountValue - 1;
+            const totalSupplyValue = (totalSupply/(10**18));
+            const divdendPerSession = (Number(totalSupplyValue) * ((divPercent / 1000) / 100));
+            const targetUSDC = divCount === (lastDividendSession) ? totalSupplyValue + (divdendPerSession) : divdendPerSession;
             setTargetValue(targetUSDC);
         }
     },[coin]);
 
     useEffect(()=>{
-        if (amount >= targetValue) {
+        if (amount === targetValue) {
             setCanProceed(true);
         }else{
             setCanProceed(false);
@@ -56,62 +66,64 @@ const SetAmount = () => {
 
     const setMaxHandler = (e) => {
         if (e) {
-            setAmount(Math.floor(e));
+            setAmount(Number(e));
         }
     }
 
-    const fundContractFunc = async () => {
-        setPending(true);
-        try {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = await provider.getSigner();
-            /* Creating a new instance of the smart contract. */
-            const tokenHandler = new ethers.Contract(address3, ABI3, signer);
-            const _usdcInstance = new ethers.Contract(address2, ABI2, signer);
+    const handleKeyPress = (e) => {
+        const keyValue = e.key;
 
-            const transactionDate = new Date();
-            const timeStamp = transactionDate.toISOString().slice(0, 19).replace('T', ' ');
-            let fromAddress;
-            
-            await (signer.getAddress()).then((result)=>{
-                fromAddress = result;
-            });
-
-            const amountToFund = toEth(amount);
-
-            const getUSDCApproval = await _usdcInstance.approve(address3, amountToFund);
-
-            await getUSDCApproval.wait().then(async () => {
-                const fundContractTransaction = await tokenHandler.fundContract(amountToFund, {
-                    from: signer.getAddress(),
-                });
-
-                await fundContractTransaction.wait().then((i) => {
-                    setTransactions([...transactions, {hash: i.blockHash, type: 1, amount: amountToFund, from: fromAddress, timestamp: timeStamp, batch: batchData ? batchData.batch_name : "null"}]);
-                    setFundingStatus(true);
-                    setCurrentPage(1);
-                    setFundedAmount(amount);
-                });
-            });
-
-            setPending(false);
-        } catch (error) {
-            setPending(false);
-            setCurrentPage(1);
-            setFundingStatus(false);
-            console.log(error);
-            throw Error(`An error occurred: ${error}`);
+        switch (keyValue) {
+            case "0":
+                btnRef0 && btnRef0.current.click();
+                break;
+            case "1":
+                btnRef01 && btnRef01.current.click();
+                break;
+            case "2":
+                btnRef02 && btnRef02.current.click();
+                break;
+            case "3":
+                btnRef03 && btnRef03.current.click();
+                break;
+            case "4":
+                btnRef04 && btnRef04.current.click();
+                break;
+            case "5":
+                btnRef05 && btnRef05.current.click();
+                break;
+            case "6":
+                btnRef06 && btnRef06.current.click();
+                break;
+            case "7":
+                btnRef07 && btnRef07.current.click();
+                break;
+            case "8":
+                btnRef08 && btnRef08.current.click();
+                break;
+            case "9":
+                btnRef09 && btnRef09.current.click();
+                break;
+            case "Backspace":
+                btnRefBack && btnRefBack.current.click();
+                break;
+            default:
+                break;
         }
-    }
+
+    };
+
+    useEffect(() => {
+        window.addEventListener('keyup', handleKeyPress);
+        return () => {
+            window.removeEventListener('keyup', handleKeyPress);
+        };
+    }, [handleKeyPress]);
 
     const proceedHandler = () => {
         if (canProceed) {
-            const promise = fundContractFunc();
-            toast.promise(promise, {
-                loading: 'Funding contract..',
-                success: '👍 Contract has been funded',
-                error: 'An error occurred'
-            });
+            setCurrentPage(1);
+            setAmountToFund(targetValue+0.01);
         }
     }
     
@@ -121,6 +133,7 @@ const SetAmount = () => {
                 <div className="tagger">
                     <div className="tag">
                         {<span onClick={() => setMaxHandler((targetValue))}>Target: {formatNumFreeStyle((targetValue))}</span>}
+                        {<span>USDC: {formatNumFreeStyle((usdcBalance))}</span>}
                     </div>
                 </div>
                 
@@ -128,17 +141,17 @@ const SetAmount = () => {
                     <div className={`num`} data-symbol={` USDC`}><span>{moneyFormat(amount)}</span></div>
                 </div>
                 <div className="btns">
-                    <div onClick={() => keyPressHandler(1)} className="b">1</div>
-                    <div onClick={() => keyPressHandler(2)} className="b">2</div>
-                    <div onClick={() => keyPressHandler(3)} className="b">3</div>
-                    <div onClick={() => keyPressHandler(4)} className="b">4</div>
-                    <div onClick={() => keyPressHandler(5)} className="b">5</div>
-                    <div onClick={() => keyPressHandler(6)} className="b">6</div>
-                    <div onClick={() => keyPressHandler(7)} className="b">7</div>
-                    <div onClick={() => keyPressHandler(8)} className="b">8</div>
-                    <div onClick={() => keyPressHandler(9)} className="b">9</div>
-                    <div onClick={backspaceHandler} className="bl"><img src="https://gineousc.sirv.com/Images/icons/bks.png" alt="" /></div>
-                    <div className="b" onClick={() => keyPressHandler(0)}>0</div>
+                <div ref={btnRef01} onClick={() => keyPressHandler(1)} className="b">1</div>
+                    <div ref={btnRef02} onClick={() => keyPressHandler(2)} className="b">2</div>
+                    <div ref={btnRef03} onClick={() => keyPressHandler(3)} className="b">3</div>
+                    <div ref={btnRef04} onClick={() => keyPressHandler(4)} className="b">4</div>
+                    <div ref={btnRef05} onClick={() => keyPressHandler(5)} className="b">5</div>
+                    <div ref={btnRef06} onClick={() => keyPressHandler(6)} className="b">6</div>
+                    <div ref={btnRef07} onClick={() => keyPressHandler(7)} className="b">7</div>
+                    <div ref={btnRef08} onClick={() => keyPressHandler(8)} className="b">8</div>
+                    <div ref={btnRef09} onClick={() => keyPressHandler(9)} className="b">9</div>
+                    <div ref={btnRefBack} onClick={backspaceHandler} className="bl"><img src="https://gineousc.sirv.com/Images/icons/bks.png" alt="" /></div>
+                    <div ref={btnRef0} className="b" onClick={() => keyPressHandler(0)}>0</div>
                     <div className={`${!canProceed && "disable"}`} onClick={proceedHandler}><img src="https://gineousc.sirv.com/Images/icons/ch.png" alt="" /></div>
                 </div>
             </div>

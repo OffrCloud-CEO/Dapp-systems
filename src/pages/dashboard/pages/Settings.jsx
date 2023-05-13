@@ -7,7 +7,7 @@ const Settings = () => {
   return (
     <div className="dash_section">
       <div className="greet">
-        <div className="title">{greetUser()} {storeDataUser ? ((storeDataUser?.name).split(" ")[0]) : "@firstname"}, </div>
+        <div className="title">{greetUser()} {storeDataUser ? ((storeDataUser.displayname)) : "@firstname"}, </div>
         <div className="tags">
           <div className="img">
             {storeDataUser && <img src={storeDataUser?.dp} alt="" />}

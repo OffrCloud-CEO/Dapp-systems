@@ -1,3 +1,5 @@
+import { countryListWithPhone } from "./variables";
+
 export function isValidEmail(email) {
   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
@@ -16,6 +18,7 @@ export function greetUser() {
   }
 }
 
+// Manage Session
 export function isSessionSet() {
   const loginSession = JSON.parse(localStorage.getItem('loginSession'));
 
@@ -53,6 +56,27 @@ export function createSession(username, userId) {
   localStorage.setItem('loginSession', JSON.stringify(loginSession));
 }
 
+
+export function destroySession() {
+  localStorage.removeItem('loginSession');
+}
+
+export function disconnectWallet() {
+  if (typeof window.ethereum !== 'undefined') {
+    window.ethereum.enable();
+    window.ethereum.on('disconnect', (error) => {
+      if (!error) {
+        console.log('Wallet successfully disconnected.');
+      } else {
+        console.error('Error disconnecting wallet: ', error);
+      }
+    });
+  } else {
+    console.log('No wallet detected. No action taken.');
+  }
+}
+
+// Handle Big Numbers
 function isBigNumber(n) {
   return (typeof n === 'object' && n.constructor.name === 'BigNumber');
 }
@@ -98,27 +122,6 @@ export function formatEth(params) {
   return num;
 }
 
-export function destroySession() {
-  localStorage.removeItem('loginSession');
-}
-
-export function disconnectWallet() {
-  if (typeof window.ethereum !== 'undefined') {
-    window.ethereum.enable();
-    window.ethereum.on('disconnect', (error) => {
-      if (!error) {
-        console.log('Wallet successfully disconnected.');
-      } else {
-        console.error('Error disconnecting wallet: ', error);
-      }
-    });
-  } else {
-    console.log('No wallet detected. No action taken.');
-  }
-}
-
-
-
 export function moneyFormat(params, test) {
   let returnData = params.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   if (checkFloatLength(params) > 3 && test === 1) {
@@ -134,6 +137,7 @@ export function moneyFormat(params, test) {
   return returnData;  
 }
 
+// Fetch Eth Price
 export async function getCryptoPrice(crypto) {
   const url = `https://api.coingecko.com/api/v3/simple/price?ids=${crypto}&vs_currencies=usd`;
   const response = await fetch(url);
@@ -242,14 +246,28 @@ export function getDateDiff(startdate, enddate) {
   return output;
 }
 
-export function formatLargeNumber(num) {
+export function formatLargeNumber(num, len) {
   function roundToOneDecimalPlace(num) {
     return Math.round(num * 10) / 10;
   }
 
   num = roundToOneDecimalPlace(num);
 
-  const suffixes = ['', 'k', 'M', 'B', 'T'];
+  let suffixes;
+
+  switch (len) {
+    case "min":
+      suffixes = ['', 'k', ' MIL', ' BIL', ' TRI'];
+      break;
+    case "max":
+      suffixes = ['', 'k', ' Million', ' Billion', ' Trillion'];
+      break;
+  
+    default:
+      suffixes = ['', 'k', 'M', 'B', 'T'];
+      break;
+  }
+
   let i = 0;
   while (num >= 1000 && i < suffixes.length - 1) {
     num /= 1000;
@@ -273,24 +291,6 @@ export function daysBetween(date1, date2) {
   return diffDays;
 }
 
-
-export function isNameValid(name) {
-  // Define a list of unaccepted strings to check against
-  const unacceptedStrings = ['<', '>', 'script', 'alert', 'eval'];
-
-  // Convert the input to lowercase for case-insensitive checking
-  const lowercaseName = name.toLowerCase();
-
-  // Check if the input contains any of the unaccepted strings
-  for (let i = 0; i < unacceptedStrings.length; i++) {
-      if (lowercaseName.includes(unacceptedStrings[i])) {
-          return false;
-      }
-  }
-
-  // If the input does not contain any unaccepted strings, return true
-  return true;
-}
 
 export function daysToText(days) {
   const years = Math.floor(days / 365);
@@ -323,4 +323,42 @@ export function formatPercentage(decimal) {
   } else {
     return percentage.toFixed(2).replace(/\.?0+$/, '') + '%';
   }
+}
+
+export const escapeString = (str) => {
+  return str.replace(/[<>&'"]/g, (char) => {
+    switch (char) {
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case "&":
+        return "&amp;";
+      case "'":
+        return "&#39;";
+      case "\"":
+        return "&quot;";
+      default:
+        return char;
+    }
+  });
+}
+
+export const formatPhoneNumber = (phoneNumber, nation) => {
+  let phoneDefault;
+  countryListWithPhone.map(i =>{
+    if (i.code === nation) {
+      phoneDefault = (i.phone);
+    }
+  })
+  const areaCode = phoneNumber.slice(0, 3);
+  const firstPart = phoneNumber.slice(3, 6);
+  const secondPart = phoneNumber.slice(6);
+  return `${phoneDefault ? `+${phoneDefault}-` : ''}${areaCode}-${firstPart}-${secondPart}`;
+}
+
+export const compareObjects = (obj1, obj2) => {
+  const str1 = JSON.stringify(obj1);
+  const str2 = JSON.stringify(obj2);
+  return str1 === str2;
 }

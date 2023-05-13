@@ -1,8 +1,5 @@
-import { ethers } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
-import { bigNum, formatNum, formatPercentage } from '../../../useful/useful_tool';
-import { address } from '../../../util/constants/tokenContract';
-import { ABI3, address3 } from '../../../util/constants/tokenHandlerContract';
+import { formatNum, formatPercentage, isObjectEmpty } from '../../../useful/useful_tool';
 import { contextData } from '../dashboard';
 import { walletData } from '../pages/Wallet';
 import BuyToken from './card/BuyToken';
@@ -10,135 +7,115 @@ import TranferTokens from './card/TranferTokens';
 import Clock from './components/BuyToken/clock';
 import SendToken from './sendToken';
 
-const TokenSale = ({buyRef, transferRef}) => {
-    const { setMini, setOnSale, setLoading } = useContext(walletData);
+const TokenSale = ({ buyRef, transferRef }) => {
+    const { setMini, setOnSale, setUserBalance, setCanBuy } = useContext(walletData);
+    const { rootData, tokenSaleInfo, tokenBalance, totalSupplyBalance, kycVerified } = useContext(contextData);
+
     const [buying, setBuying] = useState(false);
     const [transfering, setTransfering] = useState(false);
-    const { contract, coinBase } = useContext(contextData);
-    const [offr, setOffr] = useState(null);
-    const [coinInfo, setCoinInfo] = useState(null);
+
+    const [tokenSaleStatus, setTokenSaleStatus] = useState(false);
+    const [coinInfo, setCoinInfo] = useState({
+        name: null,
+        symbol: null,
+        decimals: null,
+        totalSupply: null,
+        beneficiaryAddress: null,
+        contractAdress: null,
+        myBalance: null,
+        cap: null,
+        startDate: "",
+        endDate: "",
+    });
+
+    const [ salesDate, setSalesDate ] = useState({
+        startDate: "00-00-0000",
+        endDate: "00-00-0000",
+    });
 
     useEffect(() => {
-        if (contract !== null) {
-            setOffr(contract[0]);
+        if (!isObjectEmpty(salesDate)) {
+            const today = new Date();
+            const startDate = new Date(salesDate.startDate);
+            const endDate = new Date(salesDate.endDate);
+
+            setCanBuy((today > startDate) && (startDate < endDate));
         }
-    }, [contract]);
+    }, [salesDate]);
 
     useEffect(() => {
-        if (offr !== null) {
-            fetchOFFR();
-        }
-    }, [offr, coinBase, buying, transfering]);
-
-
-    function formatDate(date) {
-        const months = [
-            "january",
-            "february",
-            "march",
-            "april",
-            "may",
-            "june",
-            "july",
-            "august",
-            "september",
-            "october",
-            "november",
-            "december"
-        ];
-
-        const day = date.getDate();
-        const monthIndex = date.getMonth();
-        const year = date.getFullYear();
-
-        const monthName = months[monthIndex];
-
-        return `${day} ${monthName}, ${year}`;
-    }
-
-    const fetchOFFR = async () => {
-        setLoading(true);
-        if (coinBase) {
-            const name = await offr.name();
-            const symbol = await offr.symbol();
-            const max = await offr.totalSupply();
-            const decimals = await offr.decimals();
-            const totalSupply = await offr.totalSupply();
-            let cap = await offr.cap();
-            cap = bigNum(cap);
-            const beneficiaryAddress = await offr._beneficiary();
-            const contractAdress = address;
-            const myBalance = await offr.balanceOf(coinBase?.coinbase);
-
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = await provider.getSigner();
-
-            const OffrToken = new ethers.Contract(address3, ABI3, signer);
-            const tokenSale = await OffrToken.tokensale_open();
-            const salesEndDate = Number(await OffrToken.getSaleEndDate());
-            const salesStartDate = Number(await OffrToken.startTimestamp());
-
-            const txtEndDate = formatDate(new Date(salesEndDate));
-            const txtStartDate = formatDate(new Date(salesStartDate));
+        if (coinInfo.name !== null) {
+            const { startDateTxt, endDateTxt, status } = tokenSaleInfo;
 
             setMini({
-                startDate: txtStartDate,
-                endDate: txtEndDate,
-                status: tokenSale
+                startDate: startDateTxt,
+                endDate: endDateTxt,
+                status: status
             });
 
-            setOnSale(tokenSale);
+            setOnSale(status);
+
+            setTokenSaleStatus(status);
+
+            setSalesDate({
+                startDate: startDateTxt,
+                endDate: endDateTxt,
+            });
+        }
+    }, [tokenSaleInfo, coinInfo]);
+
+    useEffect(() => {
+        setUserBalance(tokenBalance);
+    }, [tokenBalance, coinInfo]);
+
+    useEffect(() => {
+        if (rootData.cap !== null) {
+            const { name, cap, contractAdress, beneficiaryAddress, decimals, symbol, } = rootData;
 
             const data = {
                 name,
                 symbol,
-                max,
                 decimals,
-                totalSupply,
+                totalSupply: totalSupplyBalance,
                 beneficiaryAddress,
                 contractAdress,
-                myBalance,
+                myBalance: tokenBalance,
                 cap,
-                tokenSale,
-                txtEndDate,
             }
 
             setCoinInfo(data);
-            setLoading(false);
         }
-    }
+    }, [rootData, totalSupplyBalance, tokenBalance]);
+
+
 
     return (
-        <div className="grid-card tk">
-            {buying && <BuyToken setBuying={setBuying} />}
-            {transfering && <TranferTokens setTransfering={setTransfering}/>}
-            <div className="sec">
-                <span>Token Sale</span>
-                <div className="s">{coinInfo ? `${coinInfo.tokenSale ? coinInfo.txtEndDate: "Sale Has Ended"}` : "-- --- ---"}</div>
-            </div>
+        <>
+           {coinInfo !== null &&  <div className="grid-card tk">
+                {buying && <BuyToken setBuying={setBuying} />}
+                {transfering && <TranferTokens setTransfering={setTransfering} />}
+                <div className="sec st">
+                    <section>
+                        <span>Max Supply</span>
+                        <div className="m">{formatNum((coinInfo?.cap / (10**18)))}</div>
+                    </section>
+                    <section>
+                        <span>Total Supply</span>
+                        <div className="m">{formatNum((coinInfo?.totalSupply  / (10**18)))}</div>
+                    </section>
+                </div>
 
-            <div className="sec st">
-                <section>
-                    <span>Max Supply</span>
-                    <div className="m">{formatNum(coinInfo?.cap)}</div>
-                </section>
-                <section>
-                    <span>Total Supply</span>
-                    <div className="m">{formatNum(coinInfo?.totalSupply)}</div>
-                </section>
-            </div>
+                <div className="rng">
+                    <div className="ld" data-hover={`${formatPercentage(((100 / (coinInfo?.cap)) * (coinInfo?.totalSupply)).toFixed(8))}`} style={{ width: `${(100 / (coinInfo?.cap)) * (coinInfo?.totalSupply)}%` }}></div>
+                </div>
+                <Clock endDate={coinInfo.cap !== null ? `${tokenSaleStatus ? salesDate.endDate : "1999"}` : null} />
 
-            <div className="rng">
-                <div className="ld" data-hover={`${formatPercentage(((100/(coinInfo?.cap)) * (coinInfo?.totalSupply)).toFixed(8))}`} style={{width: `${(100/(coinInfo?.cap)) * (coinInfo?.totalSupply)}%`}}></div>
-            </div>
-            
-            <Clock endDate={coinInfo ? `${coinInfo.tokenSale ? coinInfo.txtEndDate: null}` : null} />
-            
-            <input style={{display: "none"}} type="hidden" ref={buyRef} onClick={()=>setBuying(true)} />
-            <input style={{display: "none"}} type="hidden" ref={transferRef} onClick={()=>setTransfering(true)} />
+                <input style={{ display: "none" }} type="hidden" ref={buyRef} onClick={() => setBuying(true)} />
+                <input style={{ display: "none" }} type="hidden" ref={transferRef} onClick={() => setTransfering(true)} />
 
-            <SendToken buyRef={buyRef} transferRef={transferRef} />
-        </div>
+                {kycVerified && tokenSaleStatus && <SendToken buyRef={buyRef} salesData={salesDate} transferRef={transferRef} />}
+            </div>}
+        </>
     )
 }
 

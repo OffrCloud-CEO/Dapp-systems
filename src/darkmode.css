@@ -1,0 +1,20 @@
+.app {
+    --login-background-color: #d0d5e1;
+    --main-blue: rgb(15, 8, 199);
+    --fade-main-blue: rgb(56, 86, 255, .5);
+    --fade-blue: rgb(56, 86, 255, .125);
+    --fade-green: rgb(16, 216, 118, .125);
+    --dark-blue: #203de3;
+    --dark-blue-black: #ffffff;
+    --white: rgb(12, 9, 105);
+    --trans: .5s cubic-bezier(0.23, 1, 0.320, 1);
+    --black: #ffffff;
+    --primary-background: rgb(17, 20, 48);
+    --unactive: #7e7e7e;
+    --good-btn: #10d876;
+    --darker-background-color: rgba(255, 255, 255, .035);
+    --fade-yel: rgba(32, 32, 25, 0.5);
+    --pend-btn: #ffb13b;
+    --bad-btn: #ee3261;
+    --blue-gradient: linear-gradient(to top, var(--dark-blue), var(--main-blue));
+}

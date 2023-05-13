@@ -111,7 +111,7 @@ const Clock = ({endDate}) => {
             const intervalId = setInterval(() => {
                 const currentDate = new Date();
                 const difference = futureDate - currentDate;
-    
+
                 if (difference <= 0) {
                     clearInterval(intervalId);
                     return;
@@ -130,26 +130,26 @@ const Clock = ({endDate}) => {
     }, [futureDate]);
 
     useEffect(()=>{
-        setFutureDate(new Date(endDate));
+        setFutureDate(new Date(`${endDate}`));
     }, [endDate]);
 
     return (
         <div className="sec">
             <div className="clock">
                 <div className="cd">
-                    <div className="nm" ref={dayRef}>{endDate !== null ? `${timeLeft.days > 9 ? timeLeft.days : `${timeLeft.days > -1 ? timeLeft.days : '00' }`}`: "--"}</div>
+                    <div className="nm" ref={dayRef}>{endDate !== null ? `${timeLeft.days > 9 ? timeLeft.days : `${timeLeft.days > -1 ? `0${timeLeft.days}` : '00' }`}`: "--"}</div>
                     <div className="d">days</div>
                 </div>
                 <div className="cd">
-                    <div className="nm" ref={hrRef}>{endDate !== null ? `${timeLeft.hours > 9 ? timeLeft.hours : `${timeLeft.hours > -1 ? timeLeft.hours : '00' }`}`: "--"}</div>
+                    <div className="nm" ref={hrRef}>{endDate !== null ? `${timeLeft.hours > 9 ? timeLeft.hours : `${timeLeft.hours > -1 ? `0${timeLeft.hours}` : '00' }`}`: "--"}</div>
                     <div className="d">hours</div>
                 </div>
                 <div className="cd">
-                    <div className="nm" ref={minRef}>{endDate !== null ? `${timeLeft.minutes > 9 ? timeLeft.minutes : `${timeLeft.minutes > -1 ? timeLeft.minutes : '00' }`}`: "--"}</div>
+                    <div className="nm" ref={minRef}>{endDate !== null ? `${timeLeft.minutes > 9 ? timeLeft.minutes : `${timeLeft.minutes > -1 ? `0${timeLeft.minutes}` : '00' }`}`: "--"}</div>
                     <div className="d">mins</div>
                 </div>
                 <div className="cd" ref={secRef}>
-                    <div className="nm">{endDate !== null ? `${timeLeft.seconds > 9 ? timeLeft.seconds : `${timeLeft.seconds > -1 ? timeLeft.seconds : '00' }`}`: "--"}</div>
+                    <div className="nm">{endDate !== null ? `${timeLeft.seconds > 9 ? timeLeft.seconds : `${timeLeft.seconds > -1 ? `0${timeLeft.seconds}` : '00' }`}`: "--"}</div>
                     <div className="d">secs</div>
                 </div>
             </div>
