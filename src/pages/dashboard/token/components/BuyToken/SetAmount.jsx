@@ -57,13 +57,17 @@ const SetAmount = () => {
                 str = `${e}`;
             }
     
-            let testOffr = Number(str) / Number(toUsd);
             let testParam;
+            let testOffr;
+            
             if (currency === 2) {
-                testParam = parseFloat(coinBase.balance) / (10**18);
+                testOffr = Number(str);
+                testParam = (parseFloat(ethBalance) * toUsd);
             }else{
+                testOffr = Number(str) / Number(toUsd);
                 testParam = parseFloat(bal);
             }
+            
             const testValue = (testOffr <= testParam);
             const testRemain = coinInfo.remainingToken >= testOffr;
     
@@ -109,7 +113,7 @@ const SetAmount = () => {
         let testOffr = parseFloat(scr)/(toUsd / 1);
         let testParam;
         if (currency === 2) {
-            testParam = parseFloat(coinBase.balance) / (10**18);;
+            testParam = ethBalance * toUsd;
         }else{
             testParam =parseFloat(bal);
         }

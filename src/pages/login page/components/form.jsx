@@ -34,7 +34,6 @@ const FormPart = () => {
     const contRef = useRef();
     const verifyRef = useRef();
 
-
     const [emailText, setEmailText] = useState('');
     const [nameText, setNameText] = useState('');
     const [errorMessage, setErrorMessage] = useState([]);
@@ -83,7 +82,7 @@ const FormPart = () => {
     function generateVerificationUrl() {
         const baseUrl = 'https://dapp-systems.vercel.app';
         const code = generateVerificationCode();
-        return [`${baseUrl}/verify?code=${code}`, code];
+        return [`${baseUrl}/verify?token=${code}`, code];
     }
 
     const createAccountHandler = async () => {

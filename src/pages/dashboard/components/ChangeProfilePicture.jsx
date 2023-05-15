@@ -47,19 +47,26 @@ const ChangeProfilePicture = ({ setSettingDp }) => {
     }, [dp]);
 
     const handleClick = async (e) => {
-        setSelection(e);
-        setPending(true);
-        const userRef = doc(fireStore, "user_credentials", `${String(coinBase?.coinbase).toLocaleLowerCase()}`);
-        const img = images[e].img;
+        try {
+            setSelection(e);
+            setPending(true);
+            const userRef = doc(fireStore, "user_credentials", `${String(coinBase?.coinbase).toLocaleLowerCase()}`);
+            const img = images[e].img;
 
-        await updateDoc(userRef, {
-            profile_picture: img
-        });
+            await updateDoc(userRef, {
+                profile_picture: img
+            });
 
-        setPending(false);
-        setTimeout(() => {
-            setSettingDp(false); 
-        }, 2000);
+            setPending(false);
+            setTimeout(() => {
+                setSettingDp(false);
+            }, 2000);
+
+        } catch (error) {
+            setPending(false);
+            console.log(error);
+            throw Error(error);
+        }
     }
 
     const watchHandleClickFunc = (e) =>{

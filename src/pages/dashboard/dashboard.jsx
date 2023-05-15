@@ -192,8 +192,6 @@ const Dashboard = () => {
       onSnapshot(docRef, (docSnapy) => {
         const asycData = docSnapy.data();
         
-          console.log("here", asycData)
-
         if (asycData !== undefined) {
           const {
             name,
