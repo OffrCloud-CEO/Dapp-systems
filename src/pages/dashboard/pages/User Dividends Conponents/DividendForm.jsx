@@ -121,7 +121,7 @@ const DividendForm = ({ status, type, defaultValue }) => {
     return (
         <div data-title={`${type === 1 ? "Check Accumulated Dividends": type === 2 ? "Check Claimed Dividends" : "Claim Dividends"}`} className={`form-div ${status ? "" : status === undefined ? "" : "inactive"}`}>
             <div className="form">
-                {/* {viewingResult && <div className="value">${Number(value).toLocaleString()}</div>} */}
+                {viewingResult && <div className="value">${`${Number(value).toLocaleString()}`}</div>}
 
                 {!viewingResult && type > 0 && <input type="text" className="inp" value={wallet_Address} onChange={(e)=>setWallet_Address(e.target.value)} placeholder={`${coinBase?.coinbase}`} /> } 
 
