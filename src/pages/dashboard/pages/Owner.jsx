@@ -39,7 +39,7 @@ const Owner = () => {
 
     /* Updating the sold value of the document in the collection. */
     collectionSnap.forEach(async(snap) => {
-      const data = snap.data()
+      const data = snap.data();
 
       if (data.batch_name === batchData.batch_name) {
         const object_ = data;
