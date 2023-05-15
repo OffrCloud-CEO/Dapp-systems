@@ -37,6 +37,7 @@ const Dashboard = () => {
   const [adminConnected, setAdminConnected] =useState(true);
   const [myWalletAddress, setMyWalletAddress] = useState("");
   const [showUserCard, setShowUserCard] = useState(false);
+  const [errorMessage, setErrorMessage]= useState("");
 
   // Live Token Data Management Variables
   const [dividendDate, setDividendDate] = useState('');
@@ -184,12 +185,64 @@ const Dashboard = () => {
    * @returns An object with the following properties: email, name, gender, dp
    */
   const fetchCredentials = async (e) => {
-    const docRef = doc(fireStore, "user_credentials", `${e}`);
-    const docSnap = await getDoc(docRef);
-    onSnapshot(docRef, (docSnapy)=>{
-      const asycData = docSnapy.data();
+    try {
 
-      if (asycData !== undefined) {
+      const docRef = doc(fireStore, "user_credentials", `${e}`);
+      const docSnap = await getDoc(docRef);
+      onSnapshot(docRef, (docSnapy) => {
+        const asycData = docSnapy.data();
+        
+          console.log("here", asycData)
+
+        if (asycData !== undefined) {
+          const {
+            name,
+            email,
+            gender,
+            profile_picture,
+            wallet_Address,
+            date,
+            displayname,
+            emailstatus,
+            dob,
+            nationality,
+            mobile,
+            address,
+            city,
+            state,
+            zipcode,
+            kyc,
+          } = asycData;
+
+          const data = {
+            email: email,
+            name: name,
+            gender: gender,
+            dp: profile_picture,
+            created: date,
+            wallet_Address,
+            displayname,
+            emailstatus,
+            dob,
+            nationality,
+            mobile,
+            address,
+            city,
+            state,
+            zipcode,
+            kyc,
+          }
+
+
+
+          setStoreDataUser(data);
+
+        }
+
+      });
+
+      if (docSnap.exists()) {
+        const userInfo = docSnap.data();
         const {
           name,
           email,
@@ -206,9 +259,9 @@ const Dashboard = () => {
           city,
           state,
           zipcode,
-          kyc,
-        } = asycData;
-  
+          kyc
+        } = userInfo;
+
         const data = {
           email: email,
           name: name,
@@ -227,54 +280,13 @@ const Dashboard = () => {
           zipcode,
           kyc,
         }
-  
+
         setStoreDataUser(data);
-        
       }
-
-    });
-
-    if (docSnap.exists()) {
-      const userInfo = docSnap.data();
-      const {
-        name,
-        email,
-        gender,
-        profile_picture,
-        wallet_Address,
-        date,
-        displayname,
-        emailstatus,
-        dob,
-        nationality,
-        mobile,
-        address,
-        city,
-        state,
-        zipcode,
-        kyc
-      } = userInfo;
-
-      const data = {
-        email: email,
-        name: name,
-        gender: gender,
-        dp: profile_picture,
-        created: date,
-        wallet_Address,
-        displayname,
-        emailstatus,
-        dob,
-        nationality,
-        mobile,
-        address,
-        city,
-        state,
-        zipcode,
-        kyc,
-      }
-
-      setStoreDataUser(data);
+    } catch (error) {
+      const reason = error.message ? `${error.message}` : "Error: something went wrong!";
+      setErrorMessage(reason);
+      throw Error(error);
     }
   }
 
@@ -359,358 +371,365 @@ const Dashboard = () => {
 
   const fetchTokenInformation = async() =>{
     setLoading(true);
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    
-    const signer = await provider.getSigner();
-    const user = await signer.getAddress();
-    const ethBal = await signer.getBalance();
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    provider.on(user, (newBalance)=>{
-      setEthBalance(ethers.utils.formatEther(newBalance));
-    });
+      const signer = await provider.getSigner();
+      const user = await signer.getAddress();
+      const ethBal = await signer.getBalance();
 
-    setEthBalance(ethers.utils.formatEther(ethBal));
-    
-    const tokenHandler = new ethers.Contract(tokenSaleAddress, tokenSaleABI, signer);
-    const token = new ethers.Contract(tokenAddress, tokenABI, signer);
-    const tokenDividendManagement = new ethers.Contract(dividendManagementAddress, dividendManagementABI, signer);
-    const usdcInstance = new ethers.Contract(usdcAddress, usdcABI, signer);
-
-    const getLastDividendTime = Number(await tokenDividendManagement.getLastDividendTime());
-    setLastBlockTime(getLastDividendTime * 1000);
-
-    const userBalance = await usdcInstance.balanceOf(user);
-    const value = ethers.utils.formatEther(userBalance);
-    setUsdcBalance((value));
-
-    const UsdcTransferEvent = usdcInstance.filters.Transfer();
-
-    usdcInstance.on(UsdcTransferEvent, async (address01, address02, amount, event) => {
-
-      if(String(address01).toLowerCase() === String(user).toLowerCase()){
-        const userBalance = await usdcInstance.balanceOf(user);
-        const value = ethers.utils.formatEther(userBalance);
-        setUsdcBalance((value));
-      }
-
-      if(String(address02).toLowerCase() === String(user).toLowerCase()){
-        const userBalance = await usdcInstance.balanceOf(user);
-        const value = ethers.utils.formatEther(userBalance);
-        setUsdcBalance((value));
-      }
-
-      if(String(address01).toLowerCase() === String(tokenSaleAddress).toLowerCase()){
-        const userBalance = await usdcInstance.balanceOf(tokenSaleAddress);
-        const value = ethers.utils.formatEther(userBalance);
-        setContractUsdcBalance((value));
-      }
-
-      if(String(address02).toLowerCase() === String(tokenSaleAddress).toLowerCase()){
-        const userBalance = await usdcInstance.balanceOf(tokenSaleAddress);
-        const value = ethers.utils.formatEther(userBalance);
-        setContractUsdcBalance((value));
-      }
-
-      if(String(address01).toLowerCase() === String(dividendManagementAddress).toLowerCase()){
-        const userBalance = await usdcInstance.balanceOf(dividendManagementAddress);
-        const value = ethers.utils.formatEther(userBalance);
-        setDividendUsdcBalance((value));
-      }
-      if(String(address02).toLowerCase() === String(dividendManagementAddress).toLowerCase()){
-        const userBalance = await usdcInstance.balanceOf(dividendManagementAddress);
-        const value = ethers.utils.formatEther(userBalance);
-        setDividendUsdcBalance((value));
-      }
-    });
-
-    const adminWallet = await tokenHandler.getAdmin();
-
-    const divPeriod = Number(await tokenDividendManagement.getDividendPeriod());
-    const divInterval = Number(await tokenDividendManagement.getDividendInterval());
-    const divIntervalCount = divPeriod > 0 ? Number(await tokenDividendManagement.getDividendIntervalCount()): 0;
-    const divCount = Number(await tokenDividendManagement.getTotalDividendCount());
-    const divPercent = parseFloat(await tokenDividendManagement.getDividendPercent());
-
-    const divPeriodValue = (divPeriod / (24 * 60 * 60));
-    const divIntervalValue = divInterval / (24 * 60 * 60);
-    const divIntervalCountValue = divIntervalCount;
-    const divCountValue = divCount;
-    const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
-    const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
-
-    const name = await token.name();
-    const symbol = await token.symbol();
-    const decimals = await token.decimals();
-    const totalSupply = await token.totalSupply();
-    const rates = await token.rate();
-    let cap = await token.cap();
-    cap = bigNum(cap);
-    const beneficiaryAddress = await token.getBeneficiary();
-    const myBalance = await token.balanceOf(user);
-
-    const KYCList = await token.getKYCList();
-    const isOwner = String(adminWallet).toLocaleLowerCase() === String(user).toLocaleLowerCase();
-
-    const kycList = await token.getKYCList();
-
-    // TokenHandler Data
-    const isSaleOpen = await tokenHandler.tokensale_open();
-    const isKycVerified = kycList.includes(user);
-    const salesEndDate = Number(await tokenHandler.getSaleEndDate());
-
-    const txtEndDate = formatDate(new Date(salesEndDate));
-
-    const isDividendPeriod = await tokenDividendManagement.isDividendPaymentPeriodActive();
-
-    const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
-    const dividendUsdc = await usdcInstance.balanceOf(dividendManagementAddress);
-
-    setDividendUsdcBalance(ethers.utils.formatEther(dividendUsdc));
-    const batchName = await tokenHandler.getTokenBatchName();
-
-    const sold = ethers.utils.formatEther(await tokenHandler.getTokenSold());
-    const salesStartDate = Number(await tokenHandler.startTimestamp());
-
-    const txtStartDate = formatDate(new Date(salesStartDate));
-
-    setAdminConnected(isOwner);
-    const obj = {
-      batchName: batchName,
-      KYC: KYCList,
-      KYCLength: KYCList.length,
-      sold: sold,
-      contractUSDC: contractUSDC,
-      startDate: txtStartDate,
-      endDate: txtEndDate,
-      totalSupply: totalSupply,
-      name: name,
-      symbol: symbol,
-      decimals: decimals,
-      beneficiaryAddress: beneficiaryAddress,
-      contractAdress: tokenAddress,
-      myBalance: myBalance,
-      cap: cap,
-      isSaleOpen: isSaleOpen,
-      isKycVerified: isKycVerified,
-      isDividendPeriod: isDividendPeriod,
-      isOwner: isOwner,
-      divPeriod: divPeriodValue,
-      divInterval: divIntervalValue,
-      divIntervalCountValue,
-      divCount: divCountValue,
-      divPercent,
-      claimableDividendsOf,
-      claimedDividendsOf,
-      tokenPriceRates: rates,
-    }
-
-    setRootData(obj);
-    setLoading(false);
-
-    // Token Event Listener
-    const TransferEvent = token.filters.Transfer();
-    const KYCUserAddedEvent = token.filters.KYCUserAdded();
-    const KYCUserRemovedEvent = token.filters.KYCUserRemoved();
-
-    // Token Sale Event Listener
-    const TokensPurchasedEvent = tokenHandler.filters.TokensPurchased();
-    const TokenSaleStartedEvent = tokenHandler.filters.TokenSaleStarted();
-    const TokenSaleEndedEvent = tokenHandler.filters.TokenSaleEnded();
-    const FundsReleasedEvent = tokenHandler.filters.FundsReleased();
-
-    // Dividend Contract Listeners
-    const DividendsDistributedEvent = tokenDividendManagement.filters.DividendsDistributed();
-    const DividendPeriodEndedEvent = tokenDividendManagement.filters.DividendPeriodEnded();
-    const DividendPeriodStartedEvent = tokenDividendManagement.filters.DividendPeriodStarted();
-    const DividendsClaimedEvent = tokenDividendManagement.filters.DividendsClaimed();
-
-    tokenDividendManagement.on(DividendsClaimedEvent, async()=>{
-      const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
-      const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
-      const myBalance = await token.balanceOf(user);
-      const totalSupply = await token.totalSupply();       
-      setTotalSupplyBalance(totalSupply);          
-
-      setClaimableData({
-        claimable: claimableDividendsOf,
-        withdrawn: claimedDividendsOf,
+      provider.on(user, (newBalance) => {
+        setEthBalance(ethers.utils.formatEther(newBalance));
       });
 
-      setTokenBalnce(myBalance);
-    });
+      setEthBalance(ethers.utils.formatEther(ethBal));
 
-    tokenDividendManagement.on(DividendPeriodEndedEvent, async()=> {
-      const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
-      const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
-      const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
-      const totalSupply = await token.totalSupply();       
-      const isDividendPeriod = await tokenDividendManagement.isDividendPaymentPeriodActive();
-      
-      setTotalSupplyBalance(totalSupply);          
-      setDividendInitialInfo({
-        interval: 0,
-        period: 0,
-        percentValue: 0,
-        status: isDividendPeriod
+      const tokenHandler = new ethers.Contract(tokenSaleAddress, tokenSaleABI, signer);
+      const token = new ethers.Contract(tokenAddress, tokenABI, signer);
+      const tokenDividendManagement = new ethers.Contract(dividendManagementAddress, dividendManagementABI, signer);
+      const usdcInstance = new ethers.Contract(usdcAddress, usdcABI, signer);
+
+      const getLastDividendTime = Number(await tokenDividendManagement.getLastDividendTime());
+      setLastBlockTime(getLastDividendTime * 1000);
+
+      const userBalance = await usdcInstance.balanceOf(user);
+      const value = ethers.utils.formatEther(userBalance);
+      setUsdcBalance((value));
+
+      const UsdcTransferEvent = usdcInstance.filters.Transfer();
+
+      usdcInstance.on(UsdcTransferEvent, async (address01, address02, amount, event) => {
+
+        if (String(address01).toLowerCase() === String(user).toLowerCase()) {
+          const userBalance = await usdcInstance.balanceOf(user);
+          const value = ethers.utils.formatEther(userBalance);
+          setUsdcBalance((value));
+        }
+
+        if (String(address02).toLowerCase() === String(user).toLowerCase()) {
+          const userBalance = await usdcInstance.balanceOf(user);
+          const value = ethers.utils.formatEther(userBalance);
+          setUsdcBalance((value));
+        }
+
+        if (String(address01).toLowerCase() === String(tokenSaleAddress).toLowerCase()) {
+          const userBalance = await usdcInstance.balanceOf(tokenSaleAddress);
+          const value = ethers.utils.formatEther(userBalance);
+          setContractUsdcBalance((value));
+        }
+
+        if (String(address02).toLowerCase() === String(tokenSaleAddress).toLowerCase()) {
+          const userBalance = await usdcInstance.balanceOf(tokenSaleAddress);
+          const value = ethers.utils.formatEther(userBalance);
+          setContractUsdcBalance((value));
+        }
+
+        if (String(address01).toLowerCase() === String(dividendManagementAddress).toLowerCase()) {
+          const userBalance = await usdcInstance.balanceOf(dividendManagementAddress);
+          const value = ethers.utils.formatEther(userBalance);
+          setDividendUsdcBalance((value));
+        }
+        if (String(address02).toLowerCase() === String(dividendManagementAddress).toLowerCase()) {
+          const userBalance = await usdcInstance.balanceOf(dividendManagementAddress);
+          const value = ethers.utils.formatEther(userBalance);
+          setDividendUsdcBalance((value));
+        }
       });
-      setContractUsdcBalance(ethers.utils.formatEther(contractUSDC));
-      setClaimableData({
-        claimable: claimableDividendsOf,
-        withdrawn: claimedDividendsOf,
-      });
-    });
 
-    tokenDividendManagement.on(FundsReleasedEvent, async()=>{
-      const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
-
-      setContractUsdcBalance(ethers.utils.formatEther(contractUSDC));
-    });
-
-    tokenDividendManagement.on(DividendPeriodStartedEvent, async()=>{
-      const divIntervalCount = Number(await tokenDividendManagement.getDividendIntervalCount());
-      const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
-      const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
-
-      const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
-      const isDividendPeriod = await tokenDividendManagement.isDividendPaymentPeriodActive();
+      const adminWallet = await tokenHandler.getAdmin();
 
       const divPeriod = Number(await tokenDividendManagement.getDividendPeriod());
       const divInterval = Number(await tokenDividendManagement.getDividendInterval());
+      const divIntervalCount = divPeriod > 0 ? Number(await tokenDividendManagement.getDividendIntervalCount()) : 0;
       const divCount = Number(await tokenDividendManagement.getTotalDividendCount());
       const divPercent = parseFloat(await tokenDividendManagement.getDividendPercent());
 
       const divPeriodValue = (divPeriod / (24 * 60 * 60));
       const divIntervalValue = divInterval / (24 * 60 * 60);
-
-      setClaimableData({
-        claimable: claimableDividendsOf,
-        withdrawn: claimedDividendsOf,
-      });
-      
-      setContractUsdcBalance(ethers.utils.formatEther(contractUSDC));
-
-      setDividendSessionData({
-        paid: divCount,
-        total: divIntervalCount
-      });
-
-      setDividendInitialInfo({
-        interval: divIntervalValue,
-        period: divPeriodValue,
-        percentValue: divPercent,
-        status: isDividendPeriod,
-      });
-
-    });
-
-    tokenDividendManagement.on(DividendsDistributedEvent, async()=>{
-
-      const divCountValue = Number(await tokenDividendManagement.getTotalDividendCount());
-      const divIntervalCount = Number(await tokenDividendManagement.getDividendIntervalCount());
-      const getLastDividendTime = Number(await tokenDividendManagement.getLastDividendTime());
-
+      const divIntervalCountValue = divIntervalCount;
+      const divCountValue = divCount;
       const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
       const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
 
-      const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);      
-      
-      setLastBlockTime(getLastDividendTime * 1000);
-
-      setClaimableData({
-        claimable: claimableDividendsOf,
-        withdrawn: claimedDividendsOf,
-      });
-
-      setContractUsdcBalance(ethers.utils.formatEther(contractUSDC));
-
-      setDividendSessionData({
-        paid: divCountValue,
-        total: divIntervalCount,
-      });
-    });
-
-    token.on(KYCUserAddedEvent, async()=>{
-      const KYCList = await token.getKYCList();
-      const isKycVerified = KYCList.includes(user);
-
-      setKycVerified(isKycVerified);
-      setKycDataList(KYCList);
-    });
-
-    token.on(KYCUserRemovedEvent, async()=>{
-      const KYCList = await token.getKYCList();
-      const isKycVerified = KYCList.includes(user);
-
-      setKycVerified(isKycVerified);
-      setKycDataList(KYCList);
-    });
-
-    tokenHandler.on(TokenSaleStartedEvent, async()=>{
-      const isSaleOpen = await tokenHandler.tokensale_open();
-      const salesEndDate = Number(await tokenHandler.getSaleEndDate());
-      const salesStartDate = Number(await tokenHandler.startTimestamp());
-      const txtStartDate = formatDate(new Date(salesStartDate));
-      const txtEndDate = formatDate(new Date(salesEndDate));
-      const batchName = await tokenHandler.getTokenBatchName();
-      const sold = ethers.utils.formatEther(await tokenHandler.getTokenSold());
-
-      setTokenSaleInfo({
-        batchName: batchName,
-        endDateTxt: txtEndDate,
-        startDateTxt: txtStartDate,
-        status: isSaleOpen
-      });
-  
-      setSoldValue(sold);
-    });
-
-    tokenHandler.on(TokenSaleEndedEvent, async()=>{
-      const isSaleOpen = await tokenHandler.tokensale_open();
-      const salesEndDate = Number(await tokenHandler.getSaleEndDate());
-      const salesStartDate = Number(await tokenHandler.startTimestamp());
-      const txtStartDate = formatDate(new Date(salesStartDate));
-      const txtEndDate = formatDate(new Date(salesEndDate));
-      const batchName = await tokenHandler.getTokenBatchName();
-      const sold = ethers.utils.formatEther(await tokenHandler.getTokenSold());
-
-      setTokenSaleInfo({
-        batchName: batchName,
-        endDateTxt: txtEndDate,
-        startDateTxt: txtStartDate,
-        status: isSaleOpen
-      });
-  
-      setSoldValue(sold);
-    });
-
-    tokenHandler.on(TokensPurchasedEvent, async () => {
+      const name = await token.name();
+      const symbol = await token.symbol();
+      const decimals = await token.decimals();
+      const totalSupply = await token.totalSupply();
+      const rates = await token.rate();
+      let cap = await token.cap();
+      cap = bigNum(cap);
+      const beneficiaryAddress = await token.getBeneficiary();
       const myBalance = await token.balanceOf(user);
-      const totalSupply = await token.totalSupply();       
-      const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
-      const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);      
+
+      const KYCList = await token.getKYCList();
+      const isOwner = String(adminWallet).toLocaleLowerCase() === String(user).toLocaleLowerCase();
+
+      const kycList = await token.getKYCList();
+
+      // TokenHandler Data
+      const isSaleOpen = await tokenHandler.tokensale_open();
+      const isKycVerified = kycList.includes(user);
+      const salesEndDate = Number(await tokenHandler.getSaleEndDate());
+
+      const txtEndDate = formatDate(new Date(salesEndDate));
+
+      const isDividendPeriod = await tokenDividendManagement.isDividendPaymentPeriodActive();
+
+      const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
+      const dividendUsdc = await usdcInstance.balanceOf(dividendManagementAddress);
+
+      setDividendUsdcBalance(ethers.utils.formatEther(dividendUsdc));
+      const batchName = await tokenHandler.getTokenBatchName();
+
       const sold = ethers.utils.formatEther(await tokenHandler.getTokenSold());
+      const salesStartDate = Number(await tokenHandler.startTimestamp());
 
-      setClaimableData({
-        claimable: claimableDividendsOf,
-        withdrawn: claimedDividendsOf,
+      const txtStartDate = formatDate(new Date(salesStartDate));
+
+      setAdminConnected(isOwner);
+      const obj = {
+        batchName: batchName,
+        KYC: KYCList,
+        KYCLength: KYCList.length,
+        sold: sold,
+        contractUSDC: contractUSDC,
+        startDate: txtStartDate,
+        endDate: txtEndDate,
+        totalSupply: totalSupply,
+        name: name,
+        symbol: symbol,
+        decimals: decimals,
+        beneficiaryAddress: beneficiaryAddress,
+        contractAdress: tokenAddress,
+        myBalance: myBalance,
+        cap: cap,
+        isSaleOpen: isSaleOpen,
+        isKycVerified: isKycVerified,
+        isDividendPeriod: isDividendPeriod,
+        isOwner: isOwner,
+        divPeriod: divPeriodValue,
+        divInterval: divIntervalValue,
+        divIntervalCountValue,
+        divCount: divCountValue,
+        divPercent,
+        claimableDividendsOf,
+        claimedDividendsOf,
+        tokenPriceRates: rates,
+      }
+
+      setRootData(obj);
+      setLoading(false);
+
+      // Token Event Listener
+      const TransferEvent = token.filters.Transfer();
+      const KYCUserAddedEvent = token.filters.KYCUserAdded();
+      const KYCUserRemovedEvent = token.filters.KYCUserRemoved();
+
+      // Token Sale Event Listener
+      const TokensPurchasedEvent = tokenHandler.filters.TokensPurchased();
+      const TokenSaleStartedEvent = tokenHandler.filters.TokenSaleStarted();
+      const TokenSaleEndedEvent = tokenHandler.filters.TokenSaleEnded();
+      const FundsReleasedEvent = tokenHandler.filters.FundsReleased();
+
+      // Dividend Contract Listeners
+      const DividendsDistributedEvent = tokenDividendManagement.filters.DividendsDistributed();
+      const DividendPeriodEndedEvent = tokenDividendManagement.filters.DividendPeriodEnded();
+      const DividendPeriodStartedEvent = tokenDividendManagement.filters.DividendPeriodStarted();
+      const DividendsClaimedEvent = tokenDividendManagement.filters.DividendsClaimed();
+
+      tokenDividendManagement.on(DividendsClaimedEvent, async () => {
+        const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
+        const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
+        const myBalance = await token.balanceOf(user);
+        const totalSupply = await token.totalSupply();
+        setTotalSupplyBalance(totalSupply);
+
+        setClaimableData({
+          claimable: claimableDividendsOf,
+          withdrawn: claimedDividendsOf,
+        });
+
+        setTokenBalnce(myBalance);
       });
-      setTokenBalnce(myBalance);      
-      setSoldValue(sold);
-      setTotalSupplyBalance(totalSupply);          
-    });
 
-    token.on(TransferEvent, async (from, to, amount, event) => {
-      const myBalance = await token.balanceOf(user);
-      const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
-      const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
-      if (from === user || to === user) {
+      tokenDividendManagement.on(DividendPeriodEndedEvent, async () => {
+        const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
+        const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
+        const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
+        const totalSupply = await token.totalSupply();
+        const isDividendPeriod = await tokenDividendManagement.isDividendPaymentPeriodActive();
+
+        setTotalSupplyBalance(totalSupply);
+        setDividendInitialInfo({
+          interval: 0,
+          period: 0,
+          percentValue: 0,
+          status: isDividendPeriod
+        });
+        setContractUsdcBalance(ethers.utils.formatEther(contractUSDC));
+        setClaimableData({
+          claimable: claimableDividendsOf,
+          withdrawn: claimedDividendsOf,
+        });
+      });
+
+      tokenDividendManagement.on(FundsReleasedEvent, async () => {
+        const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
+
+        setContractUsdcBalance(ethers.utils.formatEther(contractUSDC));
+      });
+
+      tokenDividendManagement.on(DividendPeriodStartedEvent, async () => {
+        const divIntervalCount = Number(await tokenDividendManagement.getDividendIntervalCount());
+        const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
+        const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
+
+        const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
+        const isDividendPeriod = await tokenDividendManagement.isDividendPaymentPeriodActive();
+
+        const divPeriod = Number(await tokenDividendManagement.getDividendPeriod());
+        const divInterval = Number(await tokenDividendManagement.getDividendInterval());
+        const divCount = Number(await tokenDividendManagement.getTotalDividendCount());
+        const divPercent = parseFloat(await tokenDividendManagement.getDividendPercent());
+
+        const divPeriodValue = (divPeriod / (24 * 60 * 60));
+        const divIntervalValue = divInterval / (24 * 60 * 60);
+
+        setClaimableData({
+          claimable: claimableDividendsOf,
+          withdrawn: claimedDividendsOf,
+        });
+
+        setContractUsdcBalance(ethers.utils.formatEther(contractUSDC));
+
+        setDividendSessionData({
+          paid: divCount,
+          total: divIntervalCount
+        });
+
+        setDividendInitialInfo({
+          interval: divIntervalValue,
+          period: divPeriodValue,
+          percentValue: divPercent,
+          status: isDividendPeriod,
+        });
+
+      });
+
+      tokenDividendManagement.on(DividendsDistributedEvent, async () => {
+
+        const divCountValue = Number(await tokenDividendManagement.getTotalDividendCount());
+        const divIntervalCount = Number(await tokenDividendManagement.getDividendIntervalCount());
+        const getLastDividendTime = Number(await tokenDividendManagement.getLastDividendTime());
+
+        const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
+        const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
+
+        const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
+
+        setLastBlockTime(getLastDividendTime * 1000);
+
+        setClaimableData({
+          claimable: claimableDividendsOf,
+          withdrawn: claimedDividendsOf,
+        });
+
+        setContractUsdcBalance(ethers.utils.formatEther(contractUSDC));
+
+        setDividendSessionData({
+          paid: divCountValue,
+          total: divIntervalCount,
+        });
+      });
+
+      token.on(KYCUserAddedEvent, async () => {
+        const KYCList = await token.getKYCList();
+        const isKycVerified = KYCList.includes(user);
+
+        setKycVerified(isKycVerified);
+        setKycDataList(KYCList);
+      });
+
+      token.on(KYCUserRemovedEvent, async () => {
+        const KYCList = await token.getKYCList();
+        const isKycVerified = KYCList.includes(user);
+
+        setKycVerified(isKycVerified);
+        setKycDataList(KYCList);
+      });
+
+      tokenHandler.on(TokenSaleStartedEvent, async () => {
+        const isSaleOpen = await tokenHandler.tokensale_open();
+        const salesEndDate = Number(await tokenHandler.getSaleEndDate());
+        const salesStartDate = Number(await tokenHandler.startTimestamp());
+        const txtStartDate = formatDate(new Date(salesStartDate));
+        const txtEndDate = formatDate(new Date(salesEndDate));
+        const batchName = await tokenHandler.getTokenBatchName();
+        const sold = ethers.utils.formatEther(await tokenHandler.getTokenSold());
+
+        setTokenSaleInfo({
+          batchName: batchName,
+          endDateTxt: txtEndDate,
+          startDateTxt: txtStartDate,
+          status: isSaleOpen
+        });
+
+        setSoldValue(sold);
+      });
+
+      tokenHandler.on(TokenSaleEndedEvent, async () => {
+        const isSaleOpen = await tokenHandler.tokensale_open();
+        const salesEndDate = Number(await tokenHandler.getSaleEndDate());
+        const salesStartDate = Number(await tokenHandler.startTimestamp());
+        const txtStartDate = formatDate(new Date(salesStartDate));
+        const txtEndDate = formatDate(new Date(salesEndDate));
+        const batchName = await tokenHandler.getTokenBatchName();
+        const sold = ethers.utils.formatEther(await tokenHandler.getTokenSold());
+
+        setTokenSaleInfo({
+          batchName: batchName,
+          endDateTxt: txtEndDate,
+          startDateTxt: txtStartDate,
+          status: isSaleOpen
+        });
+
+        setSoldValue(sold);
+      });
+
+      tokenHandler.on(TokensPurchasedEvent, async () => {
+        const myBalance = await token.balanceOf(user);
+        const totalSupply = await token.totalSupply();
+        const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
+        const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
+        const sold = ethers.utils.formatEther(await tokenHandler.getTokenSold());
+
         setClaimableData({
           claimable: claimableDividendsOf,
           withdrawn: claimedDividendsOf,
         });
         setTokenBalnce(myBalance);
-      }
-    });
+        setSoldValue(sold);
+        setTotalSupplyBalance(totalSupply);
+      });
+
+      token.on(TransferEvent, async (from, to, amount, event) => {
+        const myBalance = await token.balanceOf(user);
+        const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
+        const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
+        if (from === user || to === user) {
+          setClaimableData({
+            claimable: claimableDividendsOf,
+            withdrawn: claimedDividendsOf,
+          });
+          setTokenBalnce(myBalance);
+        }
+      });
+    } catch (error) {
+      const reason = error.reason ? `Error: ${error.reason}` : "Error: Something Went wrong, please refreash";
+      setErrorMessage(reason);
+      console.log(error);
+      throw Error(error);
+    }
 
   }
 
@@ -752,16 +771,23 @@ const Dashboard = () => {
       window.location = "/";
     } else {
       const loginSession = JSON.parse(localStorage.getItem('loginSession'));
-      const addr = loginSession.username;
-      if (fetchCredentials(addr) !== false) {
-        fetchCredentials();
+      const emailStatus = loginSession.status;
+
+      if(!emailStatus){
+        window.location = "/verify";
       }
+
+      const addr = String(loginSession.username).toLocaleLowerCase();
+      if (fetchCredentials(addr) !== false) {
+        fetchCredentials(addr);
+      }
+
       connectWallet();
     }
 
     fetchTokenInformation();
     fetchActiveSalesBatch();
-  }, []);
+  }, [myWalletAddress]);
 
   useEffect(() => {
     if (logOut) {
@@ -794,6 +820,7 @@ const Dashboard = () => {
         {loading && <div className="loadingScreen">
           <div>
             <img src="https://gineousc.sirv.com/Images/Infinite.gif" alt="preloader" />
+            {errorMessage && <span>{errorMessage}</span>}
           </div>
         </div>}
         <NavArea />

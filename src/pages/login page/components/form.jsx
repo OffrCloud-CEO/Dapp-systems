@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useId } from 'react'
 import { useState } from 'react';
 import { fireStore } from '../../../firebase/sdk';
 import { getDoc, collection, doc, setDoc } from 'firebase/firestore';
@@ -6,22 +6,38 @@ import { useRef } from 'react';
 import { createSession, isValidEmail } from '../../../useful/useful_tool';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { getDataFromLogin } from '../../../store/reducers/userDetails';
 import { ethers } from 'ethers';
 import { toast } from 'react-hot-toast';
+import emailjs from 'emailjs-com';
+
+const ErrSection = ({errorMessage, clean, cleanData, keyValue}) => {
+    const [innerStatus, setInnerStatus] = useState(true);
+
+    useEffect(()=>{
+        setTimeout(() => {
+            setInnerStatus(false);
+            clean(cleanData.filter(i=>i.key === keyValue));
+        }, 5000);
+    }, []);
+
+    return (
+        <div className={`errorMsg ${innerStatus ? "show" : ""}`}>
+            {errorMessage}
+        </div>
+    )
+}
 
 const FormPart = () => {
     const emailRef = useRef();
     const nameRef = useRef();
     const checkBoxRef = useRef();
     const contRef = useRef();
-    const dispatch = useDispatch();
+    const verifyRef = useRef();
 
 
     const [emailText, setEmailText] = useState('');
     const [nameText, setNameText] = useState('');
-    const [imageUrl, setImageUrl] = useState('');
+    const [errorMessage, setErrorMessage] = useState([]);
 
     const [walletAddress, setWalletAddress] = useState('');
     const [connected, setConnected] = useState(false);
@@ -33,10 +49,8 @@ const FormPart = () => {
         agree: false
     });
 
-    const [coin, setCoin] = useState({});
-    const [userInfo, setUserInfo] = useState({});
-
     const [accountExist, setAccountExist] = useState(false);
+    const [accountVerified, setAccountVerified] = useState(false);
 
     function generateUsername() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -56,69 +70,148 @@ const FormPart = () => {
         return username;
     }
 
+    function generateVerificationCode() {
+        const length = 8;
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let code = '';
+        for (let i = 0; i < length; i++) {
+            code += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return code;
+    }
+
+    function generateVerificationUrl() {
+        const baseUrl = 'https://dapp-systems.vercel.app';
+        const code = generateVerificationCode();
+        return [`${baseUrl}/verify?code=${code}`, code];
+    }
+
     const createAccountHandler = async () => {
         if (!proceeding) {
-            if (checkBoxRef.current.checked) {
-                const lenName = (nameRef.current.value).split(' ');
-                if (lenName.length > 1) {
-                    if (isValidEmail(emailRef.current.value)) {
-                        setProceeding(true);
+            try {
+                if (checkBoxRef.current.checked) {
+                    const lenName = (nameRef.current.value).split(' ');
+                    if (lenName.length > 1) {
+                        if (isValidEmail(emailRef.current.value)) {
+                            setProceeding(true);
 
-                        const transactionDate = new Date();
-                        const timeStamp = transactionDate.toISOString().slice(0, 19).replace('T', ' ');
+                            const transactionDate = new Date();
+                            const timeStamp = transactionDate.toISOString().slice(0, 19).replace('T', ' ');
 
-                        const userRef = collection(fireStore, "user_credentials");
+                            const userRef = collection(fireStore, "user_credentials");
+                            const emailAuth = collection(fireStore, "email_authetication");
+                            const formName = nameRef.current.value;
+                            const formEmail = emailRef.current.value;
+                            const walletAdr = String(walletAddress).toLocaleLowerCase();
 
+                            try {
+                                const serviceId = process.env.REACT_APP_SERVICE_ID;
+                                const templateId = process.env.REACT_APP_TEMPLATE_003;
+                                const userId = process.env.REACT_APP_USER_ID;
+                                const emailAuthdata = generateVerificationUrl();
 
-                        await setDoc(doc(userRef, `${walletAddress}`), {
-                            name: nameRef.current.value,
-                            email: emailRef.current.value,
-                            profile_picture: dp(),
-                            wallet_Address: walletAddress,
-                            created: timeStamp,
-                            displayname: generateUsername(),
-                            emailstatus: false,
-                            dob: null,
-                            nationality: '',
-                            mobile: '',
-                            address: [],
-                            city: '',
-                            state: '',
-                            zipcode: '',
-                            kyc: false,
-                            
-                        });
-                        setProceeding(false);
-                        proceedHandler();
+                                const emailProperties = {
+                                    subjectTxt: "Verify Email - OffrCloud",
+                                    titleTxt: "Verify Your Email Address",
+                                    bodyTxt: "Thank you for registering with our platform. To ensure the security of your account, we require you to verify your email address. Please click on the verification button below to complete the process. If you did not register with our platform, please ignore this message.",
+                                    urlTxt: emailAuthdata[0],
+                                    btnTxt: "Verify Email",
+                                    toEmail : formEmail,
+                                }
+
+                                await setDoc(doc(emailAuth, `${emailAuthdata[1]}`), {
+                                    user: `${walletAdr}`,
+                                    email: formEmail,
+                                    code: `${emailAuthdata[1]}`,
+                                    status: false,
+                                });
+
+                                emailjs.send(serviceId, templateId, emailProperties, userId)
+                                    .then((result) => {
+                                        console.log('Email sent successfully:', result.text);
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error sending email:', error);
+                                    });
+
+                                await setDoc(doc(userRef, `${walletAdr}`), {
+                                    name: formName,
+                                    email: formEmail,
+                                    profile_picture: dp(),
+                                    wallet_Address: walletAddress,
+                                    created: timeStamp,
+                                    displayname: generateUsername(),
+                                    emailstatus: false,
+                                    dob: null,
+                                    nationality: '',
+                                    mobile: '',
+                                    address: [],
+                                    city: '',
+                                    state: '',
+                                    zipcode: '',
+                                    kyc: false,
+
+                                });
+                                
+                                setProceeding(false);
+                                setAccountVerified(false);
+                                setAccountExist(true);
+                            } catch (error) {
+                                console.log(error);
+                                throw ({cause: "Email provided might mispelt"});
+                            }
+                        } else {
+                            setHasError({ email: true });
+                            throw ({cause: "Invalid Email Address!"});
+                        }
                     } else {
-                        setHasError({ email: true });
+                        setHasError({ name: true });
+                        throw ({cause: "Invalid Full name!"});
                     }
                 } else {
-                    setHasError({ name: true });
+                    setHasError({ agree: true });
+                    throw ({cause: "Please read & agree to the Terms & Condition!"});
                 }
-            } else {
-                setHasError({ agree: true });
+            } catch (error) {
+                setProceeding(false);
+                const reason  = error.cause ? error.cause : "Please filling the form correctly!";
+                setErrorMessage([...errorMessage, {msg:reason, key: Math.random().toString(36).substring(2, 10)}]);
+                throw Error(error);
             }
         }
     }
 
     const fetchCredentials = async () => {
         setProceeding(true);
-        const docRef = doc(fireStore, "user_credentials", `${walletAddress}`);
-        const docSnap = await getDoc(docRef);
+        const docRef = doc(fireStore, "user_credentials", `${String(walletAddress).toLocaleLowerCase()}`);
+        try {
+            const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
-            setAccountExist(true);
-            const userInfo = docSnap.data();
-            setEmailText(userInfo.email);
-            setNameText(userInfo.name);
-            setImageUrl(userInfo.profile_picture);
-            checkBoxRef.current.checked = true;
-        } else {
-            // doc.data() will be undefined in this case
-            setAccountExist(false);
+            if (docSnap.exists()) {
+                setAccountExist(true);
+                const userInfo = docSnap.data();
+                setEmailText(userInfo.email);
+                setNameText(userInfo.name);
+                checkBoxRef.current.checked = true;
+
+                if (userInfo.emailstatus) {
+                    setAccountVerified(true);
+                }else{
+                    setAccountVerified(false);
+                }
+            } else {
+                // doc.data() will be undefined in this case
+                setAccountExist(false);
+                const reason  = "You don't have an account, create one.";
+                setErrorMessage([...errorMessage, {msg:reason, key: Math.random().toString(36).substring(2, 10)}]);
+            }
+            setProceeding(false);
+        } catch (error) {
+            setProceeding(false);
+            const reason  = "failed to Fetch Credentials client is offline. Refresh the page.";
+            setErrorMessage([...errorMessage, {msg:reason, key: Math.random().toString(36).substring(2, 10)}]);
+            throw Error(error);
         }
-        setProceeding(false);
 
     }
 
@@ -138,12 +231,15 @@ const FormPart = () => {
             setWalletAddress(user);
 
             setConnected(true);
+            setConnecting(false);
         } catch (error) {
-            console.log(error)
+            setConnected(false);
+            setConnecting(false);
+            const reason  = error.reason ? `Error: ${error.reason}` : "No Wallet Detected Found!";
+            setErrorMessage([...errorMessage, {msg:reason, key: Math.random().toString(36).substring(2, 10)}]);
             throw Error(error)
         }
         
-        setConnecting(false);
     }
 
     useEffect(() => {
@@ -152,42 +248,43 @@ const FormPart = () => {
         }
     }, [walletAddress]);
 
-    useEffect(() => {
-        const data = {
-            email: emailText,
-            name: nameText,
-            dp: imageUrl,
-        }
-        setUserInfo(data);
-    }, [emailText, nameText, imageUrl]);
-
     const proceedHandler = () => {
         if (!proceeding) {
-            setProceeding(true);
-            dispatch(getDataFromLogin({ coinInfo: coin, userInfo }));
-
-            createSession(walletAddress, { coinInfo: coin });
-
-            setTimeout(() => {
-                contRef.current.click();
-            }, 200);
+            if (accountExist) {
+                setProceeding(true);
+                if (!accountVerified) {
+                    createSession(walletAddress, false);
+                    setTimeout(() => {
+                        verifyRef.current.click();
+                    }, 200);
+                } else {
+                    createSession(walletAddress, true);
+                    setTimeout(() => {
+                        contRef.current.click();
+                    }, 200);
+                }
+            } else {
+                return;
+            }
         }
     }
 
-    const connectWatch = ()=>{
-        const promise = connectWallet();
-        toast.promise(promise, {
-            loading: "Connecting to Your Wallet",
-            success: "Wallet is connected.",
-            error: "An error occured!"
-        });
+    const connectWatch = () => {
+        if (!connecting) {
+            const promise = connectWallet();
+            toast.promise(promise, {
+                loading: "Connecting to Your Wallet",
+                success: "Wallet is connected.",
+                error: "An error occured!"
+            });
+        }
     }
 
     const fetchCredentialsWatch = ()=>{
         const promise = fetchCredentials();
         toast.promise(promise, {
-            loading: "Fetching credentials",
-            success: "credentials found.",
+            loading: "Checking for user in database...",
+            success: "Check Complete.",
             error: "An error occured!"
         });
     }
@@ -196,7 +293,7 @@ const FormPart = () => {
         const promise = createAccountHandler();
         toast.promise(promise, {
             loading: "Creating an Account for you",
-            success: "Your account is created",
+            success: "Your account has been created.",
             error: "An error occured!"
         });
     }
@@ -204,7 +301,6 @@ const FormPart = () => {
 
     return (
         <section className="formPart">
-            {/* <ConnectionModal /> */}
             <section>
                 <div className="form-g">
                     <label>
@@ -243,7 +339,11 @@ const FormPart = () => {
                     </div>
                 </div>
             </section>
+            {errorMessage.length > 0 && errorMessage.map(i=> (
+                <ErrSection key={i.key} keyValue={i.key} errorMessage={i.msg} clean={setErrorMessage} cleanData={errorMessage}/>
+            ))}
             <Link to={"/dashboard"} ref={contRef} style={{ display: 'none' }} >to Dashboard</Link>
+            <Link to={"/verify"} ref={verifyRef} style={{ display: 'none' }} >to Verfication</Link>
         </section>
     )
 }

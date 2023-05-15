@@ -241,3 +241,18 @@
         opacity: 1;
     }
 }
+
+@keyframes rgbSpin {
+    50%{
+        filter: grayscale(1);
+        opacity: .5;
+        transform: scale(.9);
+    }
+}
+
+@keyframes beatingHeartErr {
+    50%{
+        border: 1px solid rgba(238, 50, 97, .25);
+        box-shadow: 0 0 25px rgba(238, 50, 97, .25);
+    }
+}

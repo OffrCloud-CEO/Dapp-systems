@@ -59,7 +59,7 @@ a:any-link {
 
 .app {
   --login-background-color: #d0d5e1;
-  --main-blue: rgb(56, 86, 255);
+  --main-blue: #3856ff;
   --fade-main-blue: rgb(56, 86, 255, .5);
   --fade-blue: rgb(56, 86, 255, .125);
   --fade-green: rgb(16, 216, 118, .125);
@@ -75,7 +75,7 @@ a:any-link {
   --good-btn: #10d876;
   --fade-yel: rgba(255, 235, 59, 0.5);
   --pend-btn: var(--bs-orange);
-  --bad-btn: #ee3261;
+  --bad-btn: rgb(238, 50, 97);
   --darker-background-color: rgba(0, 0, 0, .035);
   --blue-gradient: linear-gradient(to top, var(--dark-blue), var(--main-blue));
   scroll-behavior: smooth;
@@ -163,6 +163,75 @@ a:any-link {
 /* formPart */
 .login main {
   max-height: fit-content;
+}
+
+.login main .formPart .errorMsg.show {
+  transition: var(--trans);
+  bottom: 1rem;
+  animation: beatingHeartErr 1s linear infinite;
+}
+
+.login main .formPart .errorMsg{
+  position: fixed;
+  bottom: -100%;
+  transition: .5s linear;
+  text-align: center;
+  font-size: .9rem;
+  max-width: calc(100vw - 1rem);
+  transform: translateX(-50%);
+  left: 50%;
+  padding: 1rem;
+  border: 1px solid transparent;
+  box-shadow: 0 0 10px rgba(238, 50, 97, .15);
+  background-color: var(--white);
+  border-radius: .35rem;
+  color: var(--bad-btn);
+}
+
+.login main .verify {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  gap: 2rem;
+}
+
+.login main .btnx:hover {
+  color: var(--white);
+  background-color: var(--main-blue);
+}
+
+.login main .btnx {
+  color: var(--main-blue);
+  border: 1px solid;
+  transition: var(--trans);
+  padding: .75rem 1.5rem;
+  border-radius: .35rem;
+  font-size: .9rem;
+}
+
+.login main .verify .p {
+  max-width: 30rem;
+}
+
+.login main .verify .img img {
+  width: 7rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+.login main .verify .loading img {
+  width: 3rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+.login main .verify .p .url {
+  color: var(--main-blue);
+  cursor: pointer;
+  font-weight: 600;
 }
 
 .login main .formPart {
@@ -350,11 +419,18 @@ a:any-link {
   justify-content: center;
 }
 
+.dashboard .loadingScreen div span {
+  max-width: 21rem;
+  text-align: center;
+  color: var(--bad-btn);
+}
+
 .dashboard .loadingScreen img {
   mix-blend-mode: multiply;
   pointer-events: none;
   user-select: none;
-  width: 8rem;
+  width: 6rem;
+  animation: rgbSpin 1s linear infinite;
 }
 
 .dashboard .navArea {

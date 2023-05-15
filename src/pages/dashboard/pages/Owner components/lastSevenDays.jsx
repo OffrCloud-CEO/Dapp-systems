@@ -57,7 +57,7 @@ const LastSevenDays = ({status}) => {
 
                 collectionSnap.forEach(element => {
                     const data = element.data();
-
+                    
                     if (data.batch_name === tokenSaleInfo.batchName) {
                         tempArray.push(data);
                     }

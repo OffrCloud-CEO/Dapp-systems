@@ -41,7 +41,7 @@ export function checkExpiration() {
   return true;
 }
 
-export function createSession(username, userId) {
+export function createSession(username, status) {
   const expiresAt = new Date();
   expiresAt.setHours(expiresAt.getHours() + 1);
 
@@ -49,7 +49,7 @@ export function createSession(username, userId) {
   const loginSession = {
     expiresAt: expiresAt,
     username: username,
-    userId: userId
+    status: status
   };
 
   // Store the session in a cookie or local storage

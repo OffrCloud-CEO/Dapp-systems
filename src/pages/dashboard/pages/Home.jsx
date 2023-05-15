@@ -101,7 +101,7 @@ const HomePage = () => {
               </div> : "---"}
             </div>
           </div>
-          {<GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-client-64.png"} detail={`${(formatNum(((coinInfo?.myBalance / (10 ** 18)) * (1 / Number(coinInfo?.tokenPriceRates))) * (percent / 100000)))} USDC`} p={`Dividends Per Session`} />}
+          {<GridCard ico={"https://gineousc.sirv.com/Images/icons/icons8-client-64.png"} detail={`${(Number(Number(Number(((coinInfo?.myBalance / (10 ** 18)) * (1 / Number(coinInfo?.tokenPriceRates))) * (percent / 100000))).toFixed(2)) >= 1 ? Number(Number(Number(((coinInfo?.myBalance / (10 ** 18)) * (1 / Number(coinInfo?.tokenPriceRates))) * (percent / 100000))).toFixed(2)).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.01')}`} p={`Dividends Per Session`} />}
           {unclaimedDividends > 0 && <GridCard ico={"https://gineousc.sirv.com/Images/icons/money%20(2).svg"} detail={``} bType={1} type={`btn`} p={"Claim your Dividends"} />}
         </div>}
         <label>Coin Informations</label>
