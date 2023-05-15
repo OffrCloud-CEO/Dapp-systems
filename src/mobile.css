@@ -106,6 +106,28 @@
     .login main .side {
         display: none;
     }
+
+    .login main .formPart .mbOnly {
+        display: flex;
+        background-color: var(--main-blue);
+        border-radius: .75rem .75rem 0 0;
+        font-size: 2rem;
+        gap: 10px;
+        font-weight: 500;
+        color: var(--white);
+        padding: 2rem;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login main .formPart .mbOnly *::selection {
+        color: var(--main-blue);
+        background-color: var(--white);
+    }
+
+    .login main .formPart .mbOnly img {
+        width: 3rem;
+    }
 }
 
 @media screen and (max-width: 600px) {
@@ -132,6 +154,17 @@
 
     .formPart section .btnx {
         padding: 1rem .75rem;
+    }
+
+
+    .login main .formPart{
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .login main .formPart section{
+        gap: 0rem;
+        padding: 1rem;
     }
 
     .formPart section .inp {
@@ -169,6 +202,8 @@
     .login main {
         height: fit-content;
         max-height: fit-content;
+        min-height: fit-content;
+        height: fit-content;
         width: 97vw;
     }
 

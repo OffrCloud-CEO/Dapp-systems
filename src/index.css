@@ -246,6 +246,10 @@ a:any-link {
   flex-direction: column;
 }
 
+.login main .formPart .mbOnly {
+  display: none;
+}
+
 .formPart .title {
   font-size: 1.25em;
   font-weight: 600;

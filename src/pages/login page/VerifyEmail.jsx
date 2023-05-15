@@ -46,13 +46,17 @@ const VerifyEmail = () => {
 
     const fetchTokenData = async (token) => {
         const dataRef = doc(fireStore, "email_authetication", `${token}`);
+        console.log("Here 001")
         try {
+            console.log("Here 002")
 
             const tokenSnap = await getDoc(dataRef);
 
             if (tokenSnap.exists()) {
                 const tokenInfo = tokenSnap.data();
                 const { status, user } = tokenInfo;
+
+                console.log(tokenInfo);
 
                 if (!status) {
                     const userInfoRef = doc(fireStore, "user_credentials", `${user}`);
@@ -74,7 +78,7 @@ const VerifyEmail = () => {
 
             } else {
                 setIsValidToken(false);
-                throw ("Invalid Token! 02");
+                throw ("Invalid Token!");
             }
         }catch (error){
             throw Error(error);
@@ -90,6 +94,8 @@ const VerifyEmail = () => {
             if (foundToken !== null && userData.email !== '') {
                 fetchTokenData(foundToken, userAddr);
             }
+
+            console.log("Here 003")
         }
 
     }, [verificationToken, userWalletAddr, userData]);

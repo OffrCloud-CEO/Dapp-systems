@@ -300,6 +300,10 @@ const FormPart = () => {
 
     return (
         <section className="formPart">
+            <div className="mbOnly">
+                <img src="https://gineousc.sirv.com/Images/loader-ico.png" alt="offrcloud ico" />
+                <span>OffrCloud</span>
+            </div>
             <section>
                 <div className="form-g">
                     <label>
