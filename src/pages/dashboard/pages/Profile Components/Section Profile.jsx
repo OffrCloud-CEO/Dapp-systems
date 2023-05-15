@@ -168,7 +168,7 @@ const SectionProfile = () => {
 
             const updatedInfoObject = {...toChangeData, name: fullname, displayname: displayname, mobile: mobile, dob: dob, nationality: nationality }
         
-            await setDoc(doc(docRef, `${walletAddress}`), updatedInfoObject);
+            await setDoc(doc(docRef, `${String(walletAddress).toLocaleLowerCase()}`), updatedInfoObject);
             setEditing(false);
         } catch (error) {
             throw Error(`This Happened: ${error}`);

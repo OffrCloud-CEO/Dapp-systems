@@ -37,9 +37,9 @@ const KycPreview = () => {
             const userRef = collection(fireStore, "kycApplications");
             const objectToChange = {...userData, checkedDate: checkOnTime}
             if (userData.status === 0) {
-                await setDoc(doc(userRef, `${userWallet}`), objectToChange);
+                await setDoc(doc(userRef, `${String(userWallet).toLocaleLowerCase()}`), objectToChange);
             }else if(userData.checkedDate === "") {
-                await setDoc(doc(userRef, `${userWallet}`), objectToChange);
+                await setDoc(doc(userRef, `${String(userWallet).toLocaleLowerCase()}`), objectToChange);
             }
         }
     }

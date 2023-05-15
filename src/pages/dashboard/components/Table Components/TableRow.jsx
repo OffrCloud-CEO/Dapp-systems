@@ -68,7 +68,7 @@ const TableRow = ({ fullname, userId, docType, status, documents, sn, documentFi
 
                 const addingProcess = await addToKycListOnBlockchain();
                 if (addingProcess) {
-                    await setDoc(doc(userRef, `${userWallet}`), objectToUpdate);
+                    await setDoc(doc(userRef, `${String(userWallet).toLocaleLowerCase()}`), objectToUpdate);
                 }
             } catch (error) {
                 console.log(error);
@@ -83,7 +83,7 @@ const TableRow = ({ fullname, userId, docType, status, documents, sn, documentFi
                 const userRef = collection(fireStore, "kycApplications");
                 const objectToUpdate = { ...userData, status: 2 };
     
-                await setDoc(doc(userRef, `${userWallet}`), objectToUpdate);
+                await setDoc(doc(userRef, `${String(userWallet).toLocaleLowerCase()}`), objectToUpdate);
             } catch (error) {
                 throw Error(`This error occurred: ${error}`);
             }
@@ -95,7 +95,7 @@ const TableRow = ({ fullname, userId, docType, status, documents, sn, documentFi
                 const removingProcess = await removeFromKycList();
                 
                 if (removingProcess) {
-                    await setDoc(doc(userRef, `${userWallet}`), objectToUpdate);
+                    await setDoc(doc(userRef, `${String(userWallet).toLocaleLowerCase()}`), objectToUpdate);
                 }
             } catch (error) {
                 throw Error(`This error occurred: ${error}`);

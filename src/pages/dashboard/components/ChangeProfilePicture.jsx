@@ -49,7 +49,7 @@ const ChangeProfilePicture = ({ setSettingDp }) => {
     const handleClick = async (e) => {
         setSelection(e);
         setPending(true);
-        const userRef = doc(fireStore, "user_credentials", `${coinBase?.coinbase}`);
+        const userRef = doc(fireStore, "user_credentials", `${String(coinBase?.coinbase).toLocaleLowerCase()}`);
         const img = images[e].img;
 
         await updateDoc(userRef, {

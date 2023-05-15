@@ -244,7 +244,7 @@ const SectionKYC = () => {
     const saveInformation = async (data) =>{
         const docRef = collection(fireStore, "kycApplications");
         const updatedInfoObject = {...data};
-        await setDoc(doc(docRef, `${walletAddress}`), updatedInfoObject);
+        await setDoc(doc(docRef, `${String(walletAddress).toLocaleLowerCase()}`), updatedInfoObject);
     }
 
     const submitKYC = async () => {
