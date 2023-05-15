@@ -1,14 +1,16 @@
 import { ethers } from 'ethers';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { dividendManagementABI, dividendManagementAddress } from '../../../../util/constants/tokenDividendManagement';
 import { formatNumFreeStyle } from '../../../../useful/useful_tool';
 import { toast } from 'react-hot-toast';
+import { contextData } from '../../dashboard';
 
 const DividendForm = ({ status, type, defaultValue }) => {
     const [value, setValue] = useState(0);
     const [loading, setLoading] = useState(false);
     const [viewingResult, setViewingResult] = useState(false);
     const [wallet_Address, setWallet_Address] = useState('');
+    const { coinBase } = useContext(contextData);
 
     useEffect(()=>{
         if (Number(defaultValue) > 0) {
@@ -119,12 +121,14 @@ const DividendForm = ({ status, type, defaultValue }) => {
     return (
         <div data-title={`${type === 1 ? "Check Accumulated Dividends": type === 2 ? "Check Claimed Dividends" : "Claim Dividends"}`} className={`form-div ${status ? "" : status === undefined ? "" : "inactive"}`}>
             <div className="form">
-                {viewingResult && <div className="value">${formatNumFreeStyle(value)}</div>}
-                {!viewingResult && type > 0 && <input type="text" className="inp" value={wallet_Address} onChange={(e)=>setWallet_Address(e.target.value)} placeholder='0x09382469f0937bedc6b5dbb9b80ee2d2baf9619b' /> } 
+                {/* {viewingResult && <div className="value">${Number(value).toLocaleString()}</div>} */}
+
+                {!viewingResult && type > 0 && <input type="text" className="inp" value={wallet_Address} onChange={(e)=>setWallet_Address(e.target.value)} placeholder={`${coinBase?.coinbase}`} /> } 
+
                 <div className="btnx" onClick={btnxHandler}>
                     {loading ? <img src="https://gineousc.sirv.com/Images/Circles-menu-3.gif" alt="laoding" /> 
                     :
-                    `${type === 1 ? `${viewingResult ? "new Check" : "Check"}`: type === 2 ? `${viewingResult ? "new Check" : "Check"}` : "Claim now"}`}
+                    `${type === 1 ? `${viewingResult ? "new Check" : "Check"}`: type === 2 ? `${viewingResult ? "New Check" : "Check"}` : "Claim now"}`}
                 </div>
             </div>
         </div>
