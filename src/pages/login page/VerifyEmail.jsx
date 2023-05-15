@@ -5,7 +5,7 @@ import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 
 const VerifyEmail = () => {
-    const [verifiactionToken, setVerifiactionToken] = useState("");
+    const [verificationToken, setVerifiactionToken] = useState("");
     const [userWalletAddr, setUserWalletAddr] = useState('');
     const [userData, setUserData] = useState({
         name: "",
@@ -70,8 +70,6 @@ const VerifyEmail = () => {
                         await setDoc(doc(userRef, `${user}`), updatedInfo);
                         await setDoc(doc(tokenRef, `${token}`), updatedInfoToken);
                     }
-        
-                    
                 }
 
             } else {
@@ -85,7 +83,7 @@ const VerifyEmail = () => {
 
     useEffect(() => {
         if (userWalletAddr !== "") {
-            const foundToken = verifiactionToken;
+            const foundToken = verificationToken;
             const userAddr = String(userWalletAddr).toLocaleLowerCase();
             fetchUserData(userAddr);
 
@@ -94,21 +92,23 @@ const VerifyEmail = () => {
             }
         }
 
-    }, [verifiactionToken, userWalletAddr, userData]);
+    }, [verificationToken, userWalletAddr, userData]);
 
     useEffect(() => {
-        if (isSessionSet()) {
-            const loginSession = JSON.parse(localStorage.getItem('loginSession'));
-            const emailStatus = loginSession.status;
-            const userWallet = loginSession.username;
+        if (verificationToken === null) {
+            if (isSessionSet()) {
+                const loginSession = JSON.parse(localStorage.getItem('loginSession'));
+                const emailStatus = loginSession.status;
+                const userWallet = loginSession.username;
 
-            setUserWalletAddr(userWallet);
-            
-            if (emailStatus) {
-                window.location = "/dashboard";
+                setUserWalletAddr(userWallet);
+
+                if (emailStatus) {
+                    window.location = "/dashboard";
+                }
+            } else {
+                window.location = "/";
             }
-        }else{
-            window.location = "/";
         }
     }, []);
 
@@ -117,26 +117,26 @@ const VerifyEmail = () => {
             <main>
                 <section className="verify">
                     <div className="img">
-                        {!userData.status && verifiactionToken === null && <img src="https://gineousc.sirv.com/Images/icons/undraw_mail_sent_re_0ofv.svg" alt="icon" />}
+                        {!userData.status && verificationToken === null && <img src="https://gineousc.sirv.com/Images/icons/undraw_mail_sent_re_0ofv.svg" alt="icon" />}
                         {userData.status && <img src="https://gineousc.sirv.com/Images/icons/undraw_completing_re_i7ap.svg" alt="icon" />}
-                        {!isValidToken && verifiactionToken !== null && <img src="https://gineousc.sirv.com/Images/icons/undraw_page_not_found_re_e9o6.svg" alt="icon" />}
+                        {!isValidToken && verificationToken !== null && <img src="https://gineousc.sirv.com/Images/icons/undraw_page_not_found_re_e9o6.svg" alt="icon" />}
                     </div>
 
-                    {!userData.status && verifiactionToken === null && <div className="h1">Pending Email verification</div>}
+                    {!userData.status && verificationToken === null && <div className="h1">Pending Email verification</div>}
                     {userData.status && <div className="h1">Email Verified</div>}
-                    {!isValidToken && verifiactionToken !== null && <div className="h1">Invalid Token</div>}
+                    {!isValidToken && verificationToken !== null && <div className="h1">Invalid Token</div>}
 
-                    {!userData.status && verifiactionToken === null && <div className="p">
+                    {!userData.status && verificationToken === null && <div className="p">
                         We've sent an Email to {<span className="url">{userData?.email}</span>}, Please go to your email and follow the steps to verify your email address to proceed to the Dashboard.
                     </div>}
-                    {!isValidToken && verifiactionToken !== null && <div className="p">
+                    {!isValidToken && verificationToken !== null && <div className="p">
                         You've followed an Invalid Email verification Link.
                     </div>}
                     {userData.status && <div className="p">
                         {<span className="url">{userData?.email}</span>}
                     </div>}
                     {userData.status && <Link to={"/"} className='btnx'>Login</Link>}
-                    {!userData.status && verifiactionToken === null && <div className="loading">
+                    {!userData.status && verificationToken === null && <div className="loading">
                         <img src="https://gineousc.sirv.com/Images/sp.gif" alt="loading gif" />
                     </div>}
                 </section>
