@@ -1491,6 +1491,7 @@ a:any-link {
 
 .grid-card.tk {
   padding: unset;
+  overflow: hidden;
   width: fit-content;
   flex: 1;
 }
