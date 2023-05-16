@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { toast } from 'react-hot-toast';
 import emailjs from 'emailjs-com';
+import Terms from '../../super components/Terms';
 
 const ErrSection = ({errorMessage, clean, cleanData, keyValue}) => {
     const [innerStatus, setInnerStatus] = useState(true);
@@ -37,6 +38,7 @@ const FormPart = () => {
     const [emailText, setEmailText] = useState('');
     const [nameText, setNameText] = useState('');
     const [errorMessage, setErrorMessage] = useState([]);
+    const [viewingTerms, setViewingTerms] = useState(false);
 
     const [walletAddress, setWalletAddress] = useState('');
     const [connected, setConnected] = useState(false);
@@ -299,7 +301,8 @@ const FormPart = () => {
 
 
     return (
-        <section className="formPart">
+        <section className="formPart">      
+        {viewingTerms && <Terms closeFunction={setViewingTerms}/>}
             <a href="https://offrcloud.com" target='_blank' className="mbOnly">
                 <img src="https://gineousc.sirv.com/Images/coin-main.png" alt="offrcloud ico" />
                 <span>OffrCloud</span>
@@ -328,7 +331,7 @@ const FormPart = () => {
                         <br />
                         <div className="r">
                             <input type="checkbox" disabled={accountExist} ref={checkBoxRef} />
-                            <div className="p" onClick={() => checkBoxRef.current.click()}>I agree to OffrToken's <a className='url' href="">Terms & Conditions</a></div>
+                            <div className="p" onClick={() => checkBoxRef.current.click()}>I agree to OffrToken's <span className='url' onClick={()=>setViewingTerms(true)}>Terms & Conditions</span></div>
                         </div>
                         <br />
                         {!accountExist && <div className={`btnx`} onClick={createAccountWatch}>

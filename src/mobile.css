@@ -313,14 +313,18 @@
 
     .cover .div {
         min-height: 97dvw;
+        min-height: 97vw;
         min-width: 97dvw;
+        min-width: 97vw;
+        width: 96vw;
         animation: dropMobile .5s cubic-bezier(0.455, 0.03, 0.515, 0.955) forwards;
         border-radius: 0.35rem 0.35rem 0 0;
     }
 
     .cover.main .div {
         min-height: 97dvw;
-        min-width: 97dvw;
+        min-height: 97vw;
+        min-width: 97vw;
         animation: dropMobile .5s cubic-bezier(0.455, 0.03, 0.515, 0.955) forwards;
         border-radius: 0.35rem 0.35rem 0 0;
     }

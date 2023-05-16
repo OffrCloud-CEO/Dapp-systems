@@ -8,11 +8,13 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import PopUp from './extra/PopUp';
+import KycTerms from '../../../super components/KycTerms';
 
 const SectionKYC = () => {
     const { profileData, walletAddress, kycData } = useContext(profileContext);
 
     const [loading, setLoading] = useState(false);
+    const [viewingTerms, setViewingTerms] = useState(false);
 
     const [documentType, setDocumentType] = useState(0);
     const [fullname, setFullname] = useState("");
@@ -311,6 +313,7 @@ const SectionKYC = () => {
     return (
         <div className="tab">
             {showPopUp && <PopUp func={setShowPopUp}/>}
+            {viewingTerms && <KycTerms closeFunction={setViewingTerms}/>}
             {kycStatus === null && <div className="header">Begin your KYC Verification Process</div>}
             {kycStatus === 2 && <div className="header">Re-Apply For KYC verification</div>}
             {kycStatus === 1 && <div className="header">Your is KYC Verified</div>}

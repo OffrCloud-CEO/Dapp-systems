@@ -108,13 +108,11 @@ const VerifyEmail = () => {
         const token = searchParams.get('token');
         setVerifiactionToken(token);
 
-        console.log(token);
         if (token === null) {
-            console.log("pass empty");
             if (isSessionSet()) {
                 const loginSession = JSON.parse(localStorage.getItem('loginSession'));
                 const emailStatus = loginSession.status;
-                const userWallet = loginSession.username;
+                const userWallet = String(loginSession.username).toLocaleLowerCase();
 
                 setUserWalletAddr(userWallet);
 
