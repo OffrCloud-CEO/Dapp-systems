@@ -3,10 +3,15 @@ This is a Decentralized Application (Dapp) built using *React.js* and *Ethers.js
 
 ## Features
 - **Account Creation**: Users can create an account and securely store their private key in their browser's local storage, ensuring complete control over their tokens.
+
 - **KYC Process**: Before purchasing tokens, users must complete a Know Your Customer (KYC) process, which is necessary for compliance with regulatory requirements.
+
 - **Token Purchase**: Once a user has completed the KYC process, they can purchase tokens if tokens are on sale.
-Dividend Tracking: Users can track their dividend earnings from the tokens they hold.
+
+- **Dividend Tracking**: Users can track their dividend earnings from the tokens they hold.
+
 - **Token Management**: If a user's wallet is the owner of the token, they will have access to the Token Management page, where they can perform actions such as token transfer and burning.
+
 - **Dividend Management**: If a user's wallet is the owner of the token, they will also have access to the Dividend Management page, where they can distribute dividends to token holders.
 
 ## Getting Started
