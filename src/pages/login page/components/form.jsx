@@ -300,10 +300,10 @@ const FormPart = () => {
 
     return (
         <section className="formPart">
-            <div className="mbOnly">
+            <a href="https://offrcloud.com" target='_blank' className="mbOnly">
                 <img src="https://gineousc.sirv.com/Images/coin-main.png" alt="offrcloud ico" />
                 <span>OffrCloud</span>
-            </div>
+            </a>
             <section>
                 <div className="form-g">
                     <label>
