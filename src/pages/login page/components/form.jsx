@@ -234,7 +234,7 @@ const FormPart = () => {
         } catch (error) {
             setConnected(false);
             setConnecting(false);
-            const reason  = error.reason ? `Error: ${error.reason}` : "No Wallet Detected Found!";
+            const reason  = error.reason ? `Error: ${error.reason === "missing provider" ? "No Wallet Detected Found" : error.reason}` : "No Wallet Detected Found!";
             setErrorMessage([...errorMessage, {msg:reason, key: Math.random().toString(36).substring(2, 10)}]);
             throw Error(error)
         }
