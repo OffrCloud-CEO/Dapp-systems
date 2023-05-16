@@ -344,7 +344,7 @@
     }
     
     .calc .btns{
-        max-width: calc(100% - 1rem);
+        max-width: calc(100%);
     }
 
     .calc .btns div {
