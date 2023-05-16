@@ -329,6 +329,9 @@
         border-radius: 0.35rem 0.35rem 0 0;
     }
 
+    .cover .div.terms {
+        max-height: 40rem;
+    }    
 
     .calc {
         display: flex;
