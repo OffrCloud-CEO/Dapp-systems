@@ -586,4 +586,8 @@
     .top-logo-holder img{
         height: 2rem;
     }
+
+    .form-section {
+        padding: 0 .5rem;
+    }
 }

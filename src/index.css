@@ -1598,8 +1598,8 @@ a:any-link {
 
 .clock .cd div {
   padding: 0 1rem;
-  height: 4rem;
-  width: 4rem;
+  height: 4.5rem;
+  width: 4.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1612,7 +1612,8 @@ a:any-link {
 }
 
 .clock .cd div.nm {
-  font-size: 1rem;
+  color: var(--main-blue);
+  font-size: 1.35rem;
   font-weight: 500;
   background-color: var(--white);
   border: 1px solid var(--main-blue);

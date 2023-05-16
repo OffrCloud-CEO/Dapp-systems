@@ -337,19 +337,19 @@ const SectionKYC = () => {
                     <div className="form-grid">
                         <div className="form-g">
                             <label>Full Name <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" className="inp" placeholder='Jeffrey Dahmer' value={fullname} readOnly />
+                            <input type="text" className="inp" placeholder='Jeffrey Dahmer' value={fullname} readOnly required/>
                         </div>
                         <div className="form-g">
                             <label>Email Address <div className="t">*</div><span>(Required)</span></label>
-                            <input type="email" className="inp" value={email} placeholder='jeffrey@murder.com' readOnly/>
+                            <input type="email" className="inp" value={email} placeholder='jeffrey@murder.com' readOnly required/>
                         </div>
                         <div className="form-g">
                             <label>Mobile Number <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" className="inp" value={formatPhoneNumber(mobile, nationality)} placeholder='+555 555 5555' readOnly />
+                            <input type="text" className="inp" value={formatPhoneNumber(mobile, nationality)} placeholder='+555 555 5555' readOnly required />
                         </div>
                         <div className="form-g">
                             <label>Date of Birth <div className="t">*</div><span>(Required)</span></label>
-                            <input type="date" defaultValue={dob} className="inp" readOnly/>
+                            <input type="date" defaultValue={dob} className="inp" readOnly required/>
                         </div>
                     </div>
 
