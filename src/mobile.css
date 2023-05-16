@@ -340,7 +340,7 @@
     }
     
     .calc .screen{
-        max-width: calc(100% - 1rem);
+        max-width: calc(100%);
     }
     
     .calc .btns{
@@ -348,7 +348,7 @@
     }
 
     .calc .btns div {
-        min-width: 6rem;
+        min-width: 5.75rem;
     }      
 
     .tableDiv .mainTable .tableData:nth-child(3){
