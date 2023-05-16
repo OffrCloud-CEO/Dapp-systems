@@ -46,26 +46,24 @@ const VerifyEmail = () => {
 
     const fetchTokenData = async (token) => {
         const dataRef = doc(fireStore, "email_authetication", `${token}`);
-        console.log("Here 001")
         try {
-            console.log("Here 002")
-
             const tokenSnap = await getDoc(dataRef);
 
             if (tokenSnap.exists()) {
+                setIsValidToken(true);
+
                 const tokenInfo = tokenSnap.data();
                 const { status, user } = tokenInfo;
 
-                console.log(tokenInfo);
-
                 if (!status) {
                     const userInfoRef = doc(fireStore, "user_credentials", `${user}`);
+
                     const userRef = collection(fireStore, "user_credentials");
                     const tokenRef = collection(fireStore, "email_authetication");
+
                     const docSnap = await getDoc(userInfoRef);
 
                     if (docSnap.exists()) {
-                        setIsValidToken(true);
                         const userInfo = docSnap.data();
 
                         const updatedInfo = ({...userInfo, emailstatus: true});
@@ -92,12 +90,9 @@ const VerifyEmail = () => {
             fetchUserData(userAddr);
 
             if (foundToken !== null && userData.email !== '') {
-                fetchTokenData(foundToken, userAddr);
+                fetchTokenData(foundToken);
             }
-
-            console.log("Here 003")
         }
-
     }, [verificationToken, userWalletAddr, userData]);
 
     useEffect(() => {
@@ -119,7 +114,7 @@ const VerifyEmail = () => {
     }, []);
 
     return (
-        <div className="login">
+        <div className="login verify">
             <main>
                 <section className="verify">
                     <div className="img">
@@ -136,7 +131,7 @@ const VerifyEmail = () => {
                         We've sent an Email to {<span className="url">{userData?.email}</span>}, Please go to your email and follow the steps to verify your email address to proceed to the Dashboard.
                     </div>}
                     {!isValidToken && verificationToken !== null && <div className="p">
-                        You've followed an Invalid Email verification Link.
+                        You've followed an Invalid Email verification Link, Please endevour follow the link sent to your email.
                     </div>}
                     {userData.status && <div className="p">
                         {<span className="url">{userData?.email}</span>}

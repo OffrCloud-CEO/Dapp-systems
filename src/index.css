@@ -101,7 +101,7 @@ a:any-link {
   width: 72.5rem;
   transition: var(--trans);
   background-color: var(--white);
-  border-radius: 1rem;
+  border-radius: .5rem;
   box-shadow: 0 0 50px rgba(0, 0, 0, .05);
   overflow: hidden;
   display: flex;
@@ -217,7 +217,7 @@ a:any-link {
 }
 
 .login main .verify .img img {
-  width: 7rem;
+  width: 9rem;
   pointer-events: none;
   user-select: none;
 }

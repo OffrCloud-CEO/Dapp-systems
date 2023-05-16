@@ -109,12 +109,11 @@
 
     .login main .formPart .mbOnly {
         display: flex;
-        background-color: var(--main-blue);
         border-radius: .75rem .75rem 0 0;
         font-size: 2rem;
         gap: 10px;
         font-weight: 500;
-        color: var(--white);
+        color: var(--main-blue);
         padding: 2rem;
         justify-content: center;
         align-items: center;
@@ -156,9 +155,15 @@
         padding: 1rem .75rem;
     }
 
+    .login.verify main{
+        padding: 3rem 1rem;
+    }
+
+    .login main{
+        padding: 0;
+    }
 
     .login main .formPart{
-        padding: 0;
         overflow: hidden;
     }
 
