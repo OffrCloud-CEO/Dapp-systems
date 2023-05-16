@@ -111,10 +111,10 @@
         display: flex;
         border-radius: .75rem .75rem 0 0;
         font-size: 2rem;
-        gap: 10px;
         font-weight: 500;
         color: var(--main-blue);
-        padding: 2rem;
+        padding: 2rem 2rem 0 2rem;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
     }
@@ -125,7 +125,7 @@
     }
 
     .login main .formPart .mbOnly img {
-        width: 3rem;
+        width: 5rem;
     }
 }
 
