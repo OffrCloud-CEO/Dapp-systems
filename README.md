@@ -49,10 +49,8 @@ This Dapp was built using the following dependencies:
 
 ## Links
 
-<!-- - [Project Website](https://projectUrl.com) -->
-<!-- - [Token Website](https://tokenUrl.com) -->
-- [OFFR Cloud Website](https://offrcloudUrl.com)
+- [OFFR Cloud Website](https://offrcloud.com)
 - [Developer Website](https://www.github.com/fabiconcept)
 
 
-<!-- This project was designed and developed by **`Fabiconcept`** --># Dapp-systems
+<!-- This project was designed and developed by **`Fabiconcept`** -->
