@@ -19,7 +19,7 @@ const Wallet = () => {
       <div className="dash_section">
         <label>Token Sale</label>
         {loading && <div className="pending">
-          <img src="https://gineousc.sirv.com/Images/sp.gif" alt="" />
+          <img src="https://gineousc.sirv.com/Images/sp.gif" alt="" /> 
         </div>}
         <div className="dash-row">
           <div className="div-3">

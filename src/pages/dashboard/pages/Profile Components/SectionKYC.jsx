@@ -21,7 +21,6 @@ const SectionKYC = () => {
     const [email, setEmail] = useState("");
     const [mobile, setMobile] = useState('');
     const [dob, setDob] = useState('');
-    const [nationality, setNationality] = useState('');  
     const [addr1, setAddr1] = useState("");
     const [addr2, setAddr2] = useState("");
     const [city, setCity] = useState("");
@@ -50,12 +49,11 @@ const SectionKYC = () => {
     const checkRef02 = useRef();
 
     const initializeState = () => {
-        const { name, email, mobile, dob, nationality, address } = profileData;
+        const { name, email, mobile, dob, address } = profileData;
         setFullname(name);
         setEmail(email);
         setMobile(mobile);
         setDob(dob);
-        setNationality(nationality);
 
         switch (address.length) {
             case 1: 
@@ -265,7 +263,6 @@ const SectionKYC = () => {
                 zipcode: zipTxt,
                 mobile: mobile,
                 address: [addr1, addr2],
-                country: nationality,
                 docType: documentType,
                 frontImgUrl: `${url01}`,
                 backImgUrl: `${url02}`,
@@ -345,7 +342,7 @@ const SectionKYC = () => {
                         </div>
                         <div className="form-g">
                             <label>Mobile Number <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" className="inp" value={formatPhoneNumber(mobile, nationality)} placeholder='+555 555 5555' readOnly required />
+                            <input type="text" className="inp" value={formatPhoneNumber(mobile, "US")} placeholder='+555 555 5555' readOnly required />
                         </div>
                         <div className="form-g">
                             <label>Date of Birth <div className="t">*</div><span>(Required)</span></label>
@@ -372,20 +369,6 @@ const SectionKYC = () => {
                             <label>State <div className="t">*</div><span>(Required)</span></label>
                             <input type={'text'} autoComplete='state' onFocus={stateInputHandler} value={stateTxt} onChange={(e)=>setStateTxt(e.target.value)} className="inp" placeholder='Texas' required />
                         </div>
-                        <div className="form-g">
-                            <label>Nationality: <div className="t">*</div><span>(Required)</span></label>
-                            <select className="inp" readOnly>
-                                {countriesArr.map(i => {
-                                    if (nationality === i.code) {
-                                        return(
-                                            <option key={i.code} value={`${i.code}`}>
-                                                {i.name} 
-                                            </option>
-                                        );
-                                    }
-                                })}
-                            </select>
-                        </div>
                         <div className={`form-g ${errorWatch.zipcode ? 'err': ''}`}>
                             <label>Zip Code <div className="t">*</div><span>(Required)</span></label>
                             <input type="text" onFocus={zipcodeInputHandler} onChange={(e)=>setZipTxt(e.target.value)} value={zipTxt} className="inp" placeholder='XXXXX' required />
@@ -408,20 +391,6 @@ const SectionKYC = () => {
                             <label>State <div className="t">*</div><span>(Required)</span></label>
                             <input type={'text'} autoComplete='state' onFocus={stateInputHandler} value={stateTxt} onChange={(e)=>setStateTxt(e.target.value)} className="inp" placeholder='Texas' required />
                         </div>
-                        <div className="form-g">
-                            <label>Nationality: <div className="t">*</div><span>(Required)</span></label>
-                            <select className="inp" readOnly>
-                                {countriesArr.map(i => {
-                                    if (nationality === i.code) {
-                                        return(
-                                            <option key={i.code} value={`${i.code}`}>
-                                                {i.name} 
-                                            </option>
-                                        );
-                                    }
-                                })}
-                            </select>
-                        </div>
                         <div className={`form-g ${errorWatch.zipcode ? 'err': ''}`}>
                             <label>Zip Code <div className="t">*</div><span>(Required)</span></label>
                             <input type="text" onFocus={zipcodeInputHandler} onChange={(e)=>setZipTxt(e.target.value)} value={zipTxt} className="inp" placeholder='XXXXX' required />
@@ -443,20 +412,6 @@ const SectionKYC = () => {
                         <div className={`form-g`}>
                             <label>State <div className="t">*</div><span>(Required)</span></label>
                             <input type={'text'} value={stateTxt} className="inp" placeholder='Texas' readOnly />
-                        </div>
-                        <div className="form-g">
-                            <label>Nationality: <div className="t">*</div><span>(Required)</span></label>
-                            <select className="inp" readOnly>
-                                {countriesArr.map(i => {
-                                    if (nationality === i.code) {
-                                        return(
-                                            <option key={i.code} value={`${i.code}`}>
-                                                {i.name} 
-                                            </option>
-                                        );
-                                    }
-                                })}
-                            </select>
                         </div>
                         <div className={`form-g`}>
                             <label>Zip Code <div className="t">*</div><span>(Required)</span></label>

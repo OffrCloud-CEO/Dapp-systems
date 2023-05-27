@@ -2,11 +2,10 @@ import { collection, doc, getDocs, onSnapshot, setDoc } from 'firebase/firestore
 import React, { useContext, useEffect, useState } from 'react'
 import { fireStore } from '../../../../firebase/sdk';
 import { compareObjects, formatPhoneNumber, isValidEmail, escapeString } from '../../../../useful/useful_tool';
-import { countryList, countryListWithPhone } from '../../../../useful/variables';
+import { countryList } from '../../../../useful/variables';
 import ChangeProfilePicture from '../../components/ChangeProfilePicture';
 import { profileContext } from '../ProfilePage';
 import { toast } from 'react-hot-toast';
-import { PhoneNumberUtil } from 'google-libphonenumber';
 
 const SectionProfile = () => {
     const { profileData, walletAddress, kycData } = useContext(profileContext);
@@ -18,43 +17,31 @@ const SectionProfile = () => {
     const [dob, setDob] = useState('');
     const [profilePic, setProfilePic] = useState('');
     const [settingDp, setSettingDp] = useState(false);
-    const [nationality, setNationality] = useState('');  
-    const [hasKYC, setHasKYC] = useState(false);
     const [editing, setEditing] = useState(false);
     const [usedDisplaynames, setUsedDisplaynames] = useState([]);
-    const [cntry, setCntry] = useState(0);
     const [errorWatch, setErrorWatch] = useState({
         fullname: false,
         displayname: false,
         email: false,
         mobile: false,
         dob: false,
-        nationality: false,
     });
     const [goodToGo, setGoodToGo] = useState(false);
 
-    const [phoneMaxLength, setPhoneMaxLength] = useState(10);
+    const [phoneMaxLength, setPhoneMaxLength] = useState(11);
     
     useEffect(()=>{
         setMobile(mobileFrom);
     }, [mobileFrom]);
     
     const initializeState = () => {
-        const { name, displayname, email, mobile, dob, nationality, profile_picture, kyc } = profileData;
+        const { name, displayname, email, mobile, dob, profile_picture } = profileData;
         setFullname(name);
         setDisplayname(displayname);
         setEmail(email);
         setMobileFrom(mobile);
         setDob(dob);
-        setNationality(nationality);
         setProfilePic(profile_picture);
-        setHasKYC(kyc);
-
-        countriesArr.map(i => {
-            if (nationality === i.code) {
-                setCntry(i.code);
-            }
-        })
     }
 
     useEffect(()=>{
@@ -119,7 +106,6 @@ const SectionProfile = () => {
             email: profileData.email, 
             mobile: profileData.mobile, 
             dob: dob, 
-            nationality: profileData.nationality, 
         };
         const newData = {
             name: fullname, 
@@ -127,7 +113,6 @@ const SectionProfile = () => {
             email: email, 
             mobile: mobile, 
             dob: dob, 
-            nationality: nationality,
         };
 
         const findDifference = !compareObjects(previousData, newData);
@@ -166,7 +151,7 @@ const SectionProfile = () => {
             })
 
 
-            const updatedInfoObject = {...toChangeData, name: fullname, displayname: displayname, mobile: mobile, dob: dob, nationality: nationality }
+            const updatedInfoObject = {...toChangeData, name: fullname, displayname: displayname, mobile: mobile, dob: dob}
         
             await setDoc(doc(docRef, `${String(walletAddress).toLocaleLowerCase()}`), updatedInfoObject);
             setEditing(false);
@@ -218,17 +203,6 @@ const SectionProfile = () => {
         }
     }, [fullname]);
     
-    useEffect(()=>{
-        if (profileData !== null) {
-            setMobile(mobileFrom);
-            
-            if (countriesArr.findIndex(i=> i.code === nationality < 0)) {
-                setErrorWatch({...errorWatch, nationality: true});
-            }else{
-                setErrorWatch({...errorWatch, nationality: false});
-            }
-        }
-    }, [nationality]);
     
     useEffect(()=>{
         if (profileData !== null) {            
@@ -242,23 +216,19 @@ const SectionProfile = () => {
     
     useEffect(()=>{
         if (profileData !== null) {
-            const phoneUtil = PhoneNumberUtil.getInstance();
-            const examplePhoneNumber = phoneUtil.getExampleNumber(nationality)?.getNationalNumber();
-
-            const requiredLength = String(examplePhoneNumber).length;
-            setPhoneMaxLength(requiredLength);
+            setPhoneMaxLength(11);
 
             if (!(Number(mobile) > 1)) {
                 setErrorWatch({...errorWatch, mobile: true});
-            }else if (mobile.length < requiredLength) {
+            }else if (mobile.length < phoneMaxLength) {
                 setErrorWatch({...errorWatch, mobile: true});
-            }else if (mobile.length > requiredLength) {
+            }else if (mobile.length > phoneMaxLength) {
                 setErrorWatch({...errorWatch, mobile: true});
             }else{
                 setErrorWatch({...errorWatch, mobile: false});
             }
         }
-    }, [mobile, nationality]);
+    }, [mobile]);
 
     function phoneInput(e) {
         const input = e.target.value;
@@ -310,25 +280,11 @@ const SectionProfile = () => {
                         </div>
                         <div className="form-g">
                             <label>Mobile Number: </label>
-                            <input type="text" className="inp" value={mobile > 0 ? formatPhoneNumber(escapeString(mobile), nationality) : "N/A"} readOnly/>
+                            <input type="text" className="inp" value={mobile > 0 ? formatPhoneNumber(escapeString(mobile), "US") : "N/A"} readOnly/>
                         </div>
                         <div className="form-g">
                             <label>Date of Birth:</label>
                             <input type="date" defaultValue={dob} className="inp" readOnly/>
-                        </div>
-                        <div className="form-g">
-                            <label>Nationality: </label>
-                            <select className="inp" readOnly>
-                                {countriesArr.map(i => {
-                                    if (nationality === i.code) {
-                                        return(
-                                            <option key={i.code} value={`${i.code}`}>
-                                                {i.name}
-                                            </option>
-                                        );
-                                    }
-                                })}
-                            </select>
                         </div>
                     </div>}
                     {editing && <div className="form-grid">
@@ -352,16 +308,6 @@ const SectionProfile = () => {
                         <div className={`form-g ${errorWatch.dob ? "err" : ''}`}>
                             <label>Date of Birth:</label>
                             <input type="date" min={new Date("1920-01-01").toISOString().split('T')[0]} max={new Date(`${formattedDate}`).toISOString().split('T')[0]} onChange={(e)=>setDob(e.target.value)} defaultValue={dob} className="inp" placeholder='mm/dd/yyyy' required />
-                        </div>
-                        <div className={`form-g ${errorWatch.nationality ? "err" : ''}`}>
-                            <label>Nationality: </label>
-                            <select className="inp" defaultValue={`${cntry}`} onChange={(e)=>setNationality(e.target.value)} required>
-                                {countriesArr.map(i => (
-                                    <option key={i.code} value={`${i.code}`}>
-                                        {i.name}
-                                    </option>
-                                ))}
-                            </select>
                         </div>
                     </div>}
                     

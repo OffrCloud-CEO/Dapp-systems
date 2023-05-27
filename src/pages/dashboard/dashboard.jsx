@@ -723,7 +723,7 @@ const Dashboard = () => {
         }
       });
     } catch (error) {
-      const reason = error.reason ? `Error: ${error.reason}` : "Error: Something Went wrong, please refreash";
+      const reason = error.reason ? `Error: ${error.reason}` : "Please make sure you are on the right Network (Sepolia Networt), please refreash the page after update.";
       setErrorMessage(reason);
       console.log(error);
       throw Error(error);

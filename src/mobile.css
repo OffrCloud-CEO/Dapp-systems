@@ -215,7 +215,6 @@
     .grid-system .grid-card {
         min-width: unset;
         width: 100%;
-        /* max-width: 25rem; */
         font-size: 70%;
     }
 

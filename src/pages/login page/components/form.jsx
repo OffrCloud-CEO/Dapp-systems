@@ -144,7 +144,6 @@ const FormPart = () => {
                                     displayname: generateUsername(),
                                     emailstatus: false,
                                     dob: null,
-                                    nationality: '',
                                     mobile: '',
                                     address: [],
                                     city: '',
@@ -330,7 +329,7 @@ const FormPart = () => {
                     <div className={`form-g ${hasError.agree && 'error'}`}>
                         <br />
                         <div className="r">
-                            <input type="checkbox" disabled={accountExist} ref={checkBoxRef} />
+                            <input type="checkbox" disabled={accountExist} ref={checkBoxRef}/>
                             <div className="p" onClick={() => checkBoxRef.current.click()}>I agree to OffrToken's <span className='url' onClick={()=>setViewingTerms(true)}>Terms & Conditions</span></div>
                         </div>
                         <br />
