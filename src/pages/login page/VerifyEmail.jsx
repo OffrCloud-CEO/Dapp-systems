@@ -37,7 +37,7 @@ const VerifyEmail = () => {
                     setVerifyState(1);
                 }
             } else {
-                throw ("Wallet doesn't Exist in Database!");
+                throw new Error("Wallet doesn't Exist in Database!");
             }
         }catch (error){
             throw Error(error);

@@ -951,6 +951,7 @@ a:any-link {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  font-size: .85rem;
 }
 
 .usercard .infocard div p {
@@ -1252,6 +1253,17 @@ a:any-link {
   max-height: 70vh;
   max-width: 80vw;
   object-fit: contain;
+}
+
+.cover .div.viewImage .viewPic iframe {
+  max-height: 70vh;
+  max-width: 80vw;
+  height: 70vh;
+  width: 80vw;
+  object-fit: contain;
+  scrollbar-width: thin; /* Set the width of the scroll bar */
+  scrollbar-color: transparent transparent;
+  border-radius: .35rem;
 }
 
 .cover .div.viewImage {
@@ -3940,6 +3952,13 @@ a:any-link {
 
 }
 
+.dash_section .tabs .tab section .steps .upload-area .preview-image iframe {
+  width: 100%;
+  max-width: 90%;
+  max-height: calc(25rem * 0.9);
+  object-fit: contain;
+}
+
 .dash_section .tabs .tab section .steps .upload-area .preview-image img {
   width: 100%;
   max-width: 90%;
@@ -4479,6 +4498,10 @@ a.url, span.url {
   grid-template-columns: 10rem 1fr 1fr;
 }
 
+.tableDiv .info-grid .doc-row.full {
+  grid-template-columns: 10rem 1fr;
+}
+
 .tableDiv .info-grid .doc-row span {
   display: flex;
   border-right: 1px solid rgba(0, 0, 0, .15);
@@ -4490,6 +4513,23 @@ a.url, span.url {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.tableDiv .info-grid .doc-row .pic-td iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tableDiv .info-grid .doc-row .pic-td.full {
+  width: 100%;
+}
+
+.tableDiv .info-grid .doc-row .pic-td.full .doc {
+  position: relative;
+  min-height: fit-content;
+  min-width: 100%;
+  max-width: 100%;
 }
 
 .tableDiv .info-grid .doc-row .pic-td .img {

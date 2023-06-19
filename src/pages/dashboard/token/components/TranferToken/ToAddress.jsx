@@ -20,7 +20,6 @@ const ToAddress = () => {
     }, [to]);
 
     const proceedHandler = () =>{
-        const toAddress = to;
         setToAddress(to);
         setCurrentPage(3);
     }

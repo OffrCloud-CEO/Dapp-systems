@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { toast } from 'react-hot-toast';
 import { dividendPropertiesSettingContext } from '../../card/DividendSettings';
 
 const Setting = () => {

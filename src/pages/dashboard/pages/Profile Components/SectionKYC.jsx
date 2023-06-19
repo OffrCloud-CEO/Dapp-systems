@@ -1,20 +1,25 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import UploadArea from './Form elements/UploadArea';
-import { countryList } from '../../../../useful/variables';
+// import { countryList } from '../../../../useful/variables';
 import { profileContext } from '../ProfilePage';
 import { formatPhoneNumber } from '../../../../useful/useful_tool';
 import { fireStore, storage } from '../../../../firebase/sdk';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import PopUp from './extra/PopUp';
 import KycTerms from '../../../super components/KycTerms';
 
 const SectionKYC = () => {
-    const { profileData, walletAddress, kycData } = useContext(profileContext);
+    const date = new Date();
+    date.setFullYear(date.getFullYear() - 16);
+    const formattedDate = date.toISOString().slice(0, 10);
 
+    const { profileData, walletAddress, kycData } = useContext(profileContext);
+    
     const [loading, setLoading] = useState(false);
     const [viewingTerms, setViewingTerms] = useState(false);
+    const [phoneMaxLength, setPhoneMaxLength] = useState(11);
 
     const [documentType, setDocumentType] = useState(0);
     const [fullname, setFullname] = useState("");
@@ -27,7 +32,19 @@ const SectionKYC = () => {
     const [stateTxt, setStateTxt] = useState("");
     const [zipTxt, setZipTxt] = useState("");
     const [frontImg, setFrontImg] = useState(null);
+    const [accreditedInvestorDoc, setAccreditedInvestorDoc] = useState(null);
     const [backImg, setBackImg] = useState(null);
+
+    const [fullnameChange, setFullnameChange] = useState("");
+    const [mobileChange, setMobileChange] = useState('');
+    const [dobChange, setDobChange] = useState('');
+
+    useEffect(()=>{
+        setFullnameChange(fullname);
+        setMobileChange(mobile);
+        setDobChange(dob);
+    }, [mobile, dob, fullname]);
+
 
     const [errorWatch, setErrorWatch] = useState({
         addrs: false,
@@ -36,10 +53,14 @@ const SectionKYC = () => {
         zipcode: false,
         frontImg: false,
         backImg: false,
+        fullname: false,
+        mobile: false,
+        dob: false,
     });
     const [goodToGo, setGoodToGo] = useState(false);
     const [agreedTerms, setAgreedTerms] = useState(false);
     const [agreedTerms01, setAgreedTerms01] = useState(false);
+    const [agreedTerms02, setAgreedTerms02] = useState(false);
     const [showPopUp, setShowPopUp] = useState(false);
 
     const [kycStatus, setKycStatus] = useState(null);
@@ -47,6 +68,8 @@ const SectionKYC = () => {
     const [backImgUrl, setBackImgUrl] = useState(null);
     const checkRef = useRef();
     const checkRef02 = useRef();
+    const checkRef03 = useRef();
+    const [editingPhone, setEditingPhone] = useState(false);
 
     const initializeState = () => {
         const { name, email, mobile, dob, address } = profileData;
@@ -72,7 +95,7 @@ const SectionKYC = () => {
 
     useEffect(()=>{
         if (kycData !== null) {
-            const { status, state, city, zipcode, address, docType, frontImgUrl, backImgUrl } = kycData;
+            const { status, state, city, zipcode, address, docType, frontImgUrl, backImgUrl, accInvestorDoc } = kycData;
             setStateTxt(state);
             setCity(city);
             setZipTxt(zipcode);
@@ -82,20 +105,20 @@ const SectionKYC = () => {
             setDocumentType(docType);
             setBackImgUrl(backImgUrl);
             setFrontImgUrl(frontImgUrl);
+            setAccreditedInvestorDoc(accInvestorDoc);
         }
     }, [kycData]);
 
     useEffect(()=>{
         const testValues = Object.values(errorWatch);
         let canProceed = true;
-
+        
         testValues.forEach(testValue => {
             if (testValue) {
                 canProceed = false;
                 return;
             }
         });
-
 
         if (!canProceed) {
             setGoodToGo(false);
@@ -136,6 +159,11 @@ const SectionKYC = () => {
             return;
         }
 
+        if (accreditedInvestorDoc === null) {
+            setGoodToGo(false);
+            return;
+        }
+
         if (agreedTerms === false) {
             setGoodToGo(false);
             return;
@@ -145,9 +173,14 @@ const SectionKYC = () => {
             setGoodToGo(false);
             return;
         }
+        
+        if (agreedTerms02 === false) {
+            setGoodToGo(false);
+            return;
+        }
 
         setGoodToGo(true);
-    }, [errorWatch, agreedTerms, agreedTerms01]);
+    }, [errorWatch, agreedTerms, agreedTerms01, agreedTerms02, accreditedInvestorDoc, frontImg, backImg]);
 
     useEffect(()=>{
         if (profileData !== null) {
@@ -240,10 +273,56 @@ const SectionKYC = () => {
         return filename01Url;
     }
 
+    // Upload Accredited Investor Document
+    const uploadDoc003 = async() =>{
+        const filename01 = `${generateUniqueId()}.${(accreditedInvestorDoc.name).substring((accreditedInvestorDoc.name).lastIndexOf('.') + 1)}`
+        const storageRef01 = ref(storage, `investorsDoc/${filename01}`);
+
+        let filename01Url ='';
+
+        // 'file' comes from the Blob or File API
+        try {
+            await uploadBytes(storageRef01, accreditedInvestorDoc).then(async (snapshot) => {
+                await getDownloadURL(snapshot.ref).then(async (url) => {
+                    filename01Url = (url);
+                });
+            });
+        } catch (error) {
+            console.log("Failed to upload Document");
+        }
+    
+        return filename01Url;
+    }
+
+    // Update Personal Informations if changed
+    const updateInfo = async() =>{
+        try {
+            const docRef = collection(fireStore, "user_credentials");
+            const getDocData = await getDocs(docRef);
+
+            let toChangeData = {}
+
+            getDocData.forEach(doc=>{ 
+                const { wallet_Address } = doc.data();
+                if (String(wallet_Address).toLowerCase() === String(walletAddress).toLowerCase()) {
+                    toChangeData = doc.data();
+                }
+            })
+
+
+            const updatedInfoObject = {...toChangeData, name: fullnameChange, mobile: mobileChange, dob: dobChange}
+        
+            await setDoc(doc(docRef, `${String(walletAddress).toLocaleLowerCase()}`), updatedInfoObject);
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
+
     // Save Information to Database
     const saveInformation = async (data) =>{
         const docRef = collection(fireStore, "kycApplications");
         const updatedInfoObject = {...data};
+        await updateInfo();
         await setDoc(doc(docRef, `${String(walletAddress).toLocaleLowerCase()}`), updatedInfoObject);
     }
 
@@ -254,6 +333,7 @@ const SectionKYC = () => {
         try {
             const url01 = await uploadDoc001();
             const url02 = await uploadDoc002();
+            const url03 = await uploadDoc003();
 
             const dataToSumbit = {
                 fullname: fullname,
@@ -266,6 +346,7 @@ const SectionKYC = () => {
                 docType: documentType,
                 frontImgUrl: `${url01}`,
                 backImgUrl: `${url02}`,
+                accInvestorDoc: `${url03}`,
                 status: 0,
                 user: profileData.displayname,
                 submitDate: `${today.toLocaleDateString()} ${today.toLocaleTimeString()}`,
@@ -305,7 +386,53 @@ const SectionKYC = () => {
         return `${randomString}-${timestamp}`;
     }
 
-    const countriesArr = Object.entries(countryList).map(([code, name]) => ({ code, name }));
+    useEffect(()=>{
+        if (profileData !== null) {
+            if (fullnameChange.split(" ").length < 2) {
+                setErrorWatch({...errorWatch, fullname: true});
+            }else if (fullnameChange.split(" ")[(fullnameChange.split(" ").length - 1)].length < 3) {
+                setErrorWatch({...errorWatch, fullname: true});
+            }else{
+                setErrorWatch({...errorWatch, fullname: false});
+            }
+        }
+    }, [fullnameChange]);
+    
+    useEffect(()=>{
+        if (profileData !== null) {            
+            if (dobChange === null) {
+                setErrorWatch({...errorWatch, dob: true});
+            }else{
+                setErrorWatch({...errorWatch, dob: false});
+            }
+        }
+    }, [dobChange]);
+    
+    useEffect(()=>{
+        if (profileData !== null) {
+            setPhoneMaxLength(11);
+
+            if (!(Number(mobileChange) > 1)) {
+                setErrorWatch({...errorWatch, mobile: true});
+            }else if (mobileChange.length < (phoneMaxLength-1)) {
+                setErrorWatch({...errorWatch, mobile: true});
+            }else{
+                setErrorWatch({...errorWatch, mobile: false});
+            }
+        }
+    }, [mobileChange]);
+
+    // const countriesArr = Object.entries(countryList).map(([code, name]) => ({ code, name }));
+    /**
+     * The function limits the length of a phone number input and sets it as the mobile number.
+     */
+    function phoneInput(e) {
+        const input = e.target.value;
+
+        if ((input).length <= (phoneMaxLength-1)) {
+            setMobileChange(input);
+        }
+    }
 
     return (
         <div className="tab">
@@ -318,6 +445,8 @@ const SectionKYC = () => {
             {kycStatus === 0 && <div className="p">Your KYC application is being processed at the moment.</div>}
             {kycStatus === null && <div className="p">Complete identity verification to participate in the tokensale.</div>}
             {kycStatus === 2 && <div className="p">Your last KYC application was declined, you can re-apply.</div>}
+
+            {/* Personal Information */}
             <section>
                 <div className="head">
                     <div className="numbering">01</div>
@@ -332,68 +461,110 @@ const SectionKYC = () => {
                 <form action='' method='POST' className="form-section">
                     {/* Personal Informartion */}
                     <div className="form-grid">
-                        <div className="form-g">
+                        <div className={`form-g ${errorWatch.fullname ? 'err': ''}`}>
                             <label>Full Name <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" className="inp" placeholder='Jeffrey Dahmer' value={fullname} readOnly required/>
+                            <input 
+                                type="text" 
+                                className="inp" 
+                                placeholder='Jeffrey Dahmer' 
+                                value={fullnameChange} 
+                                onChange={(e)=>setFullnameChange(e.target.value)} 
+                                readOnly={kycStatus < 2}
+                                required
+                            />
                         </div>
                         <div className="form-g">
                             <label>Email Address <div className="t">*</div><span>(Required)</span></label>
-                            <input type="email" className="inp" value={email} placeholder='jeffrey@murder.com' readOnly required/>
+                            <input 
+                                type="email" 
+                                className="inp" 
+                                value={email} 
+                                placeholder='jeffrey@murder.com' 
+                                readOnly 
+                                required
+                            />
                         </div>
-                        <div className="form-g">
+                        <div className={`form-g ${errorWatch.mobile ? 'err': ''}`}>
                             <label>Mobile Number <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" className="inp" value={formatPhoneNumber(mobile, "US")} placeholder='+555 555 5555' readOnly required />
+                            <input 
+                                type={`${editingPhone ? "number": "text"}`} 
+                                className="inp"
+                                value={editingPhone ? mobileChange : formatPhoneNumber(mobileChange, "US")} 
+                                onChange={phoneInput}
+                                placeholder='+555 555 5555' 
+                                onFocus={()=>{
+                                    if(kycStatus !== 0 && kycStatus !== 1 ){
+                                        setEditingPhone(true)
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    if (!e.target.matches(":focus")) {
+                                        setEditingPhone(false);
+                                    }
+                                }}
+                                readOnly={kycStatus < 2}
+                                required 
+                            />
                         </div>
-                        <div className="form-g">
+                        <div className={`form-g ${errorWatch.dob ? 'err': ''}`}>
                             <label>Date of Birth <div className="t">*</div><span>(Required)</span></label>
-                            <input type="date" defaultValue={dob} className="inp" readOnly required/>
+                            <input 
+                                type="date" 
+                                min={new Date("1920-01-01").toISOString().split('T')[0]} 
+                                max={new Date(`${formattedDate}`).toISOString().split('T')[0]} 
+                                defaultValue={dobChange} 
+                                onChange={(e)=>setDobChange(e.target.value)}
+                                className="inp" 
+                                readOnly={kycStatus < 2} 
+                                required
+                            />
                         </div>
                     </div>
 
                     {/* Residential Information */}
                     <div className="title">Residential Information</div>
                     {kycStatus === null && <div className="form-grid">
-                        <div className={`form-g ${errorWatch.addrs ? 'err': ''}`}>
+                        <div className={`form-g ${errorWatch.addrs ? 'err' : ''}`}>
                             <label>Address Line 1 <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" autoComplete='address' onFocus={addr1InputHandler} value={addr1} onChange={(e)=>setAddr1(e.target.value)} className="inp" placeholder='Your address 1' required />
+                            <input type="text" autoComplete='address' onFocus={addr1InputHandler} value={addr1} onChange={(e) => setAddr1(e.target.value)} className="inp" placeholder='Your address 1' required />
                         </div>
                         <div className={`form-g`}>
                             <label>Address Line 2 <span>(Optional)</span></label>
-                            <input type="text" autoComplete='address' onChange={(e)=>setAddr2(e.target.value)} className="inp" placeholder='Your address 2' value={addr2} />
+                            <input type="text" autoComplete='address' onChange={(e) => setAddr2(e.target.value)} className="inp" placeholder='Your address 2' value={addr2} />
                         </div>
-                        <div className={`form-g ${errorWatch.city ? 'err': ''}`}>
+                        <div className={`form-g ${errorWatch.city ? 'err' : ''}`}>
                             <label>City <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" autoComplete="city" value={city} onChange={(e)=>setCity(e.target.value)} onFocus={cityInputHandler} className="inp" placeholder='Ohio' required />
+                            <input type="text" autoComplete="city" value={city} onChange={(e) => setCity(e.target.value)} onFocus={cityInputHandler} className="inp" placeholder='Ohio' required />
                         </div>
-                        <div className={`form-g ${errorWatch.stateN ? 'err': ''}`}>
+                        <div className={`form-g ${errorWatch.stateN ? 'err' : ''}`}>
                             <label>State <div className="t">*</div><span>(Required)</span></label>
-                            <input type={'text'} autoComplete='state' onFocus={stateInputHandler} value={stateTxt} onChange={(e)=>setStateTxt(e.target.value)} className="inp" placeholder='Texas' required />
+                            <input type={'text'} autoComplete='state' onFocus={stateInputHandler} value={stateTxt} onChange={(e) => setStateTxt(e.target.value)} className="inp" placeholder='Texas' required />
                         </div>
-                        <div className={`form-g ${errorWatch.zipcode ? 'err': ''}`}>
+                        <div className={`form-g ${errorWatch.zipcode ? 'err' : ''}`}>
                             <label>Zip Code <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" onFocus={zipcodeInputHandler} onChange={(e)=>setZipTxt(e.target.value)} value={zipTxt} className="inp" placeholder='XXXXX' required />
+                            <input type="text" onFocus={zipcodeInputHandler} onChange={(e) => setZipTxt(e.target.value)} value={zipTxt} className="inp" placeholder='XXXXX' required />
                         </div>
                     </div>}
                     {kycStatus === 2 && <div className="form-grid">
-                        <div className={`form-g ${errorWatch.addrs ? 'err': ''}`}>
+                        <div className={`form-g ${errorWatch.addrs ? 'err' : ''}`}>
                             <label>Address Line 1 <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" autoComplete='address' onFocus={addr1InputHandler} value={addr1} onChange={(e)=>setAddr1(e.target.value)} className="inp" placeholder='Your address 1' required />
+                            <input type="text" autoComplete='address' onFocus={addr1InputHandler} value={addr1} onChange={(e) => setAddr1(e.target.value)} className="inp" placeholder='Your address 1' required />
                         </div>
                         <div className={`form-g`}>
                             <label>Address Line 2 <span>(Optional)</span></label>
-                            <input type="text" autoComplete='address' onChange={(e)=>setAddr2(e.target.value)} className="inp" placeholder='Your address 2' value={addr2} />
+                            <input type="text" autoComplete='address' onChange={(e) => setAddr2(e.target.value)} className="inp" placeholder='Your address 2' value={addr2} />
                         </div>
-                        <div className={`form-g ${errorWatch.city ? 'err': ''}`}>
+                        <div className={`form-g ${errorWatch.city ? 'err' : ''}`}>
                             <label>City <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" autoComplete="city" value={city} onChange={(e)=>setCity(e.target.value)} onFocus={cityInputHandler} className="inp" placeholder='Ohio' required />
+                            <input type="text" autoComplete="city" value={city} onChange={(e) => setCity(e.target.value)} onFocus={cityInputHandler} className="inp" placeholder='Ohio' required />
                         </div>
-                        <div className={`form-g ${errorWatch.stateN ? 'err': ''}`}>
+                        <div className={`form-g ${errorWatch.stateN ? 'err' : ''}`}>
                             <label>State <div className="t">*</div><span>(Required)</span></label>
-                            <input type={'text'} autoComplete='state' onFocus={stateInputHandler} value={stateTxt} onChange={(e)=>setStateTxt(e.target.value)} className="inp" placeholder='Texas' required />
+                            <input type={'text'} autoComplete='state' onFocus={stateInputHandler} value={stateTxt} onChange={(e) => setStateTxt(e.target.value)} className="inp" placeholder='Texas' required />
                         </div>
-                        <div className={`form-g ${errorWatch.zipcode ? 'err': ''}`}>
+                        <div className={`form-g ${errorWatch.zipcode ? 'err' : ''}`}>
                             <label>Zip Code <div className="t">*</div><span>(Required)</span></label>
-                            <input type="text" onFocus={zipcodeInputHandler} onChange={(e)=>setZipTxt(e.target.value)} value={zipTxt} className="inp" placeholder='XXXXX' required />
+                            <input type="text" onFocus={zipcodeInputHandler} onChange={(e) => setZipTxt(e.target.value)} value={zipTxt} className="inp" placeholder='XXXXX' required />
                         </div>
                     </div>}
                     {kycStatus < 2 && kycStatus !== null && <div className="form-grid">
@@ -421,6 +592,7 @@ const SectionKYC = () => {
                 </form>
             </section>
 
+            {/* Upload ID Section */}
             <section>
                 <div className="head">
                     <div className="numbering">02</div>
@@ -510,6 +682,7 @@ const SectionKYC = () => {
                 </div>
             </section>
 
+            {/* Wallet Information Section */}
             <section>
                 <div className="head">
                     <div className="numbering">03</div>
@@ -526,13 +699,36 @@ const SectionKYC = () => {
                 </div>
             </section>
 
+            {/* Accredited Investor Section */}
+            {kycStatus !== 1 &&<section>
+                <div className="head">
+                    <div className="numbering">04</div>
+                    <div className="txt">
+                        <span>Accredited Investor Section</span>
+                        <span>Only Accredited Investors are allowed to KYC</span>
+                    </div>
+                </div>
+                <div className="warning">
+                    Attach a document that proofs your Investor (i.e Your Networth is over 1 Million Dollars, Excluding primary residence & Income is over $200K in each prior 2 year and reasonably expect the same for the current year).
+                </div>
+                <div className="steps">
+                    {kycStatus === null && <div className="h">Attach Document</div>}
+                    {kycStatus === 2 &&<div className="h">Attach Document</div>}
+                    {kycStatus !== null && kycStatus < 2 && <div className="h">Uploaded Document</div>}
+                    {kycStatus === null && <UploadArea uploadType={1} func={setAccreditedInvestorDoc} />}
+                    {kycStatus === 2 && <UploadArea uploadType={1} func={setAccreditedInvestorDoc} />}
+                    {kycStatus < 2 && kycStatus !== null && <UploadArea status={1} viewImg={accreditedInvestorDoc} func={setBackImg} uploadType={1} />}
+                </div>
+            </section>}
+
+            {/* Agree to Terms */}
             {kycStatus === null && <section>
                 <div className="r">
                     <div className="containerd">
                         <input type="checkbox" onChange={(e)=>setAgreedTerms(e.target.checked)} ref={checkRef} />
                         <div className="checkmark" onClick={()=>checkRef.current.click()}></div>
                     </div>
-                    <span>I Have Read The <a href="" className='url'>Terms Of Condition</a> And <a href="" className="url">Privary Policy</a>.</span>
+                    <span>I Have Read The <span className='url' onClick={()=>setViewingTerms(true)}>Terms Of Condition</span> And <span className='url' onClick={()=>setViewingTerms(true)}>Privary Policy</span>.</span>
                 </div>
                 <div className="r">
                     <div className="containerd">
@@ -540,6 +736,13 @@ const SectionKYC = () => {
                         <div className="checkmark" onClick={()=>checkRef02.current.click()}></div>
                     </div>
                     <span>All personal information entered is correct and up-to-date.</span>
+                </div>
+                <div className="r">
+                    <div className="containerd">
+                        <input type="checkbox" onChange={(e)=>setAgreedTerms02(e.target.checked)} ref={checkRef03} />
+                        <div className="checkmark" onClick={()=>checkRef03.current.click()}></div>
+                    </div>
+                    <span>I am an Accredited Investor.</span>
                 </div>
                 <div className="form-section">
                     {!goodToGo && <div className={`btnx disable`}>Submit KYC Documents</div>}
@@ -547,14 +750,15 @@ const SectionKYC = () => {
                     {goodToGo && loading && <div className={`btnx`}> <img src="https://gineousc.sirv.com/Images/Spinner-2.gif" alt="" /> </div>}
                 </div>
             </section>}
-
+            
+            {/* Agree to Terms if rejected*/}
             {kycStatus === 2 && <section>
                 <div className="r">
                     <div className="containerd">
                         <input type="checkbox" onChange={(e)=>setAgreedTerms(e.target.checked)} ref={checkRef} />
                         <div className="checkmark" onClick={()=>checkRef.current.click()}></div>
                     </div>
-                    <span>I Have Read The <a href="" className='url'>Terms Of Condition</a> And <a href="" className="url">Privary Policy</a>.</span>
+                    <span>I Have Read The <span className='url' onClick={()=>setViewingTerms(true)}>Terms Of Condition</span> And <span className="url" onClick={()=>setViewingTerms(true)}>Privary Policy</span>.</span>
                 </div>
                 <div className="r">
                     <div className="containerd">
@@ -562,6 +766,13 @@ const SectionKYC = () => {
                         <div className="checkmark" onClick={()=>checkRef02.current.click()}></div>
                     </div>
                     <span>All personal information entered is correct and up-to-date.</span>
+                </div>
+                <div className="r">
+                    <div className="containerd">
+                        <input type="checkbox" onChange={(e)=>setAgreedTerms02(e.target.checked)} ref={checkRef03} />
+                        <div className="checkmark" onClick={()=>checkRef03.current.click()}></div>
+                    </div>
+                    <span>I am an Accredited Investor.</span>
                 </div>
                 <div className="form-section">
                     {!goodToGo && <div className={`btnx disable`}>Submit KYC Documents</div>}

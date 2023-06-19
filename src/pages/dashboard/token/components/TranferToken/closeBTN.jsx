@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react'
+import React, { useRef } from 'react'
 
 const CloseBTN = ({control}) => {
     const btnRef = useRef()

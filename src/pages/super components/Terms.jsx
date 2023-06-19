@@ -10,7 +10,7 @@ const Terms = ({closeFunction}) => {
         <div className="cover">
             <div className="div terms">
                 <div className="close" onClick={closeTerms}>x</div>
-                <div className="title">Know-Your Customer (KYC) Terms & Condition</div>
+                <div className="title">Terms & Condition</div>
                 <div className='main'>
                     <div className="p">
                         <div className="sub-title">Legal Disclaimer</div>
@@ -44,20 +44,29 @@ const Terms = ({closeFunction}) => {
                             The investment in Offrtoken can lead to loss of money over short or even long periods. The
                             investors in OffrToken should expect prices to have large range fluctuations. The information
                             published on the website cannot guarantee that the investors in OffrToken would not lose
-                            money. The users of the website are solely responsible to determine what, if any, taxes apply
+                            money. 
+                        </span>
+                        <span>
+                            The users of the website are solely responsible to determine what, if any, taxes apply
                             to their Offrtoken transactions. The owners of, or contributors to, the website are not
                             responsible for determining the taxes that apply to OffrToken transactions. The website does
-                            not store, send or receive OffrToken. This is because OffrToken exists only by virtue of the
+                            not store, send or receive OffrToken. 
+                        </span>
+                        <span>
+                            This is because OffrToken exists only by virtue of the
                             ownership record maintained in the Ethereum network. Any transfer of title in OffrToken
                             occurs within a decentralized Ethereum network, and not on the website. The Website is
                             provided on an "as is'' basis without any warranties of any kind regarding the website and/or
-                            any content, data, materials and/or services provided on the website. Unless otherwise
+                            any content, data, materials and/or services provided on the website. 
+                        </span>
+                        <span>
+                            Unless otherwise
                             required by law, in no event shall the owners of, or contributors to, the website be liable for
                             any damages of any kind, including, but not limited to, loss of use, loss of profits, or loss of
                             data arising out of or in any way connected with the use of the website. The user of the
                             website agrees to arbitrate any dispute arising from or in connection with the website or this
                             disclaimer, except for disputes related to copyrights, logos, trademarks, trade names, trade
-                            secrets or patents
+                            secrets or patents.
                         </span>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import React, { useId } from 'react'
+import React from 'react'
 import { useState } from 'react';
 import { fireStore } from '../../../firebase/sdk';
 import { getDoc, collection, doc, setDoc } from 'firebase/firestore';
@@ -19,7 +19,7 @@ const ErrSection = ({errorMessage, clean, cleanData, keyValue}) => {
             setInnerStatus(false);
             clean(cleanData.filter(i=>i.key === keyValue));
         }, 5000);
-    }, []);
+    }, [clean, cleanData, keyValue]);
 
     return (
         <div className={`errorMsg ${innerStatus ? "show" : ""}`}>
@@ -55,7 +55,6 @@ const FormPart = () => {
 
     function generateUsername() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const numbers = '0123456789';
         let username = 'user';
       
         // Generate a random 4-digit number

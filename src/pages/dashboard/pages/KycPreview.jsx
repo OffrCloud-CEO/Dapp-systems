@@ -10,15 +10,17 @@ const KycPreview = () => {
     const { id } = useParams();
     const [viewingImage, setViewingImage]= useState(false);
     const [imgToView, setImgToView] = useState("");
+    const [imgToViewType, setImgToViewType] = useState(0);
     const navigate = useNavigate();
     const [userWallet, setUserWallet] = useState('');
     const [userData, setUserData] = useState(null);
     const [_id, setId]= useState(id);
     const [userExist, setUserExist] = useState(false);
 
-    const viewerHandle = (url) =>{
+    const viewerHandle = (url, type) =>{
         setViewingImage(true);
         setImgToView(url);
+        setImgToViewType(type);
     }
 
     const backBtnHandler = () =>{
@@ -67,6 +69,10 @@ const KycPreview = () => {
             fetchUserKycDetails();
         }
     }, []);
+
+    useEffect(() => {
+        console.log(userData);
+    }, [userData]);
     
     useEffect(() => {
         if (userExist) {
@@ -78,7 +84,7 @@ const KycPreview = () => {
         <div className="dash_section">
             {userExist && <label>Viewing {userData.fullname}'s Application</label>}
             {!userExist && <label>User Don't Exist!</label>}
-            {viewingImage && <ImageViewer imgUrl={imgToView} closeFunc={setViewingImage} />}
+            {viewingImage && <ImageViewer imgUrl={imgToView} type={imgToViewType} closeFunc={setViewingImage} />}
             <div className="tableDiv">
                 <div className="Trow">
                     <div className="label">KYC Details</div>
@@ -148,10 +154,6 @@ const KycPreview = () => {
                         <span>Zipcode:</span>
                         <span>{userData.zipcode}.</span>
                     </div>
-                    <div className="info-row">
-                        <span>Country of Residence:</span>
-                        <span>{countryList[userData.country]}.</span>
-                    </div>
                 </div>}
                 {userExist && <label>Uploaded Documents</label>}
                 {userExist && <div className="info-grid">
@@ -172,6 +174,20 @@ const KycPreview = () => {
                                     <div className="ico" onClick={()=>viewerHandle(`${userData.backImgUrl}`)}><img src="https://gineousc.sirv.com/Images/icons/icons8-vision-96.png" alt="" /></div>
                                 </div>
                                 <img src={`${userData.backImgUrl}`} alt={`${['Passport', 'National ID', 'Drivers Licence'][userData.docType]} Back`} />
+                            </div>
+                        </div>
+                    </div>
+                </div>}
+                {userExist && <div className="info-grid">
+                    <div className="doc-row full">
+                        {<span>{['Passport', 'National ID', 'Drivers Licence'][userData.docType]}:</span>}
+                        
+                        <div className="pic-td full">
+                            <div className="doc img">
+                                <div className="viewTrigger">
+                                    <div className="ico" onClick={()=>viewerHandle(`${userData.accInvestorDoc}`, 1)}><img src="https://gineousc.sirv.com/Images/icons/icons8-vision-96.png" alt="" /></div>
+                                </div>
+                                <iframe src={`${userData.accInvestorDoc}`} alt={`Accredited Invest Document`} />
                             </div>
                         </div>
                     </div>

@@ -143,7 +143,7 @@ const SectionProfile = () => {
 
             let toChangeData = {}
 
-            getDocData.forEach(doc=>{
+            getDocData.forEach(doc=>{ 
                 const { wallet_Address } = doc.data();
                 if (String(wallet_Address).toLowerCase() === String(walletAddress).toLowerCase()) {
                     toChangeData = doc.data();

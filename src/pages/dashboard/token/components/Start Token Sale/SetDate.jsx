@@ -79,7 +79,7 @@ const SetDate = () => {
     }
 
     const textType = (e) =>{
-        if (e.key == "Enter") {
+        if (e.key === "Enter") {
             sethandler();
         }
     }

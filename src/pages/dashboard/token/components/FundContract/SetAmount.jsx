@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { formatNumFreeStyle, moneyFormat, toEth } from '../../../../../useful/useful_tool';
-import { contextData } from '../../../dashboard';
+import { formatNumFreeStyle, moneyFormat} from '../../../../../useful/useful_tool';
 import { fundContext } from '../../card/FundContract';
 
 const SetAmount = () => {
