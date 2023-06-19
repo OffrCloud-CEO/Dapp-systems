@@ -440,7 +440,7 @@ const SectionKYC = () => {
             {viewingTerms && <KycTerms closeFunction={setViewingTerms}/>}
             {kycStatus === null && <div className="header">Begin your KYC Verification Process</div>}
             {kycStatus === 2 && <div className="header">Re-Apply For KYC verification</div>}
-            {kycStatus === 1 && <div className="header">Your is KYC Verified</div>}
+            {kycStatus === 1 && <div className="header">KYC Verified</div>}
             {kycStatus === 0 && <div className="header">Your is KYC Awaiting verification</div>}
             {kycStatus === 0 && <div className="p">Your KYC application is being processed at the moment.</div>}
             {kycStatus === null && <div className="p">Complete identity verification to participate in the tokensale.</div>}
