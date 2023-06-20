@@ -58,8 +58,8 @@ const UploadArea = ({func, status, viewImg, uploadType }) => {
                     {viewImg && <img src={viewImg} alt="" />}
                 </div>}
                 {uploadType === 1 && <div className="preview-image">
-                    {viewImg && (<iframe src={previewImage} title="Preview Document" />)}
-                    {viewImg === undefined && (<iframe src={viewImg} title="Preview Document" />)}
+                    {viewImg && (<iframe src={viewImg} title="Preview Document" />)}
+                    {viewImg === undefined && (<iframe src={previewImage} title="Preview Document" />)}
                 </div>}
             {!viewImg && <div className="clear" onClick={handleResetImg}>
                 <img src="https://gineousc.sirv.com/Images/icons/icons8-broom-96.png" alt="" />

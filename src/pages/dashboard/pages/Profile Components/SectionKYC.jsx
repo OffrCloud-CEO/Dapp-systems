@@ -522,7 +522,7 @@ const SectionKYC = () => {
                             />
                         </div>
                         <div className={`form-g ${errorWatch.dob ? 'err': ''}`}>
-                            <label>Date of Birth <div className="t">*</div><span>(Required)</span></label>
+                            <label>Date of Birth {`${readOnlyStatus}`} <div className="t">*</div><span>(Required)</span></label>
                             <input 
                                 type="date" 
                                 min={new Date("1920-01-01").toISOString().split('T')[0]} 
@@ -732,6 +732,7 @@ const SectionKYC = () => {
                     {kycStatus !== null && kycStatus < 2 && <div className="h">Uploaded Document</div>}
                     {kycStatus === null && <UploadArea uploadType={1} func={setAccreditedInvestorDoc} />}
                     {kycStatus === 2 && <UploadArea uploadType={1} func={setAccreditedInvestorDoc} />}
+                    {accreditedInvestorDoc}
                     {kycStatus < 2 && kycStatus !== null && <UploadArea status={1} viewImg={accreditedInvestorDoc} func={setBackImg} uploadType={1} />}
                 </div>
             </section>}
