@@ -484,7 +484,7 @@ const SectionKYC = () => {
                                 placeholder='Jeffrey Dahmer' 
                                 value={fullnameChange} 
                                 onChange={(e)=>setFullnameChange(e.target.value)} 
-                                readOnly={readOnlyStatus}
+                                readOnly={!readOnlyStatus}
                                 required
                             />
                         </div>
@@ -517,12 +517,12 @@ const SectionKYC = () => {
                                         setEditingPhone(false);
                                     }
                                 }}
-                                readOnly={readOnlyStatus}
+                                readOnly={!readOnlyStatus}
                                 required 
                             />
                         </div>
                         <div className={`form-g ${errorWatch.dob ? 'err': ''}`}>
-                            <label>Date of Birth {`${readOnlyStatus}`} <div className="t">*</div><span>(Required)</span></label>
+                            <label>Date of Birth <div className="t">*</div><span>(Required)</span></label>
                             <input 
                                 type="date" 
                                 min={new Date("1920-01-01").toISOString().split('T')[0]} 
@@ -530,7 +530,7 @@ const SectionKYC = () => {
                                 defaultValue={dobChange} 
                                 onChange={(e)=>setDobChange(e.target.value)}
                                 className="inp" 
-                                readOnly={readOnlyStatus} 
+                                readOnly={!readOnlyStatus} 
                                 required
                             />
                         </div>
