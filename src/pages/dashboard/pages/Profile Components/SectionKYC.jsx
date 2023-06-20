@@ -508,7 +508,7 @@ const SectionKYC = () => {
                                 onChange={phoneInput}
                                 placeholder='+555 555 5555' 
                                 onFocus={()=>{
-                                    if(kycStatus !== 0 && kycStatus !== 1 ){
+                                    if(!readOnlyStatus){
                                         setEditingPhone(true)
                                     }
                                 }}
