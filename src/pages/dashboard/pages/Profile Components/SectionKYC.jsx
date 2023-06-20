@@ -34,6 +34,7 @@ const SectionKYC = () => {
     const [frontImg, setFrontImg] = useState(null);
     const [accreditedInvestorDoc, setAccreditedInvestorDoc] = useState(null);
     const [backImg, setBackImg] = useState(null);
+    const [readOnlyStatus, setReadOnlyStatus] = useState(false)
 
     const [fullnameChange, setFullnameChange] = useState("");
     const [mobileChange, setMobileChange] = useState('');
@@ -44,6 +45,20 @@ const SectionKYC = () => {
         setMobileChange(mobile);
         setDobChange(dob);
     }, [mobile, dob, fullname]);
+
+    useEffect(()=>{
+        switch(kycStatus){
+            case 0:
+                setReadOnlyStatus(true);
+                break;
+            case 1:
+                setReadOnlyStatus(true);
+                break;
+            default:
+                setReadOnlyStatus(false);
+                break;
+        }
+    }, [kycStatus]);
 
 
     const [errorWatch, setErrorWatch] = useState({
@@ -469,7 +484,7 @@ const SectionKYC = () => {
                                 placeholder='Jeffrey Dahmer' 
                                 value={fullnameChange} 
                                 onChange={(e)=>setFullnameChange(e.target.value)} 
-                                readOnly={kycStatus < 2}
+                                readOnly={readOnlyStatus}
                                 required
                             />
                         </div>
@@ -502,7 +517,7 @@ const SectionKYC = () => {
                                         setEditingPhone(false);
                                     }
                                 }}
-                                readOnly={kycStatus < 2}
+                                readOnly={readOnlyStatus}
                                 required 
                             />
                         </div>
@@ -515,7 +530,7 @@ const SectionKYC = () => {
                                 defaultValue={dobChange} 
                                 onChange={(e)=>setDobChange(e.target.value)}
                                 className="inp" 
-                                readOnly={kycStatus < 2} 
+                                readOnly={readOnlyStatus} 
                                 required
                             />
                         </div>
