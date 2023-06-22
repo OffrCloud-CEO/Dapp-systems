@@ -725,7 +725,7 @@ const SectionKYC = () => {
                     </div>
                 </div>
                 <div className="warning">
-                    Attach a document that proofs your Investor (i.e Your Networth is over 1 Million Dollars, Excluding primary residence & Income is over $200K in each prior 2 year and reasonably expect the same for the current year).
+                    Attach profit Profit & Loss (P&L) documents that proves you are an accredited investor (i.e Your Networth is over 1 Million Dollars, Excluding primary residence & Income is over $200K in each prior 2 year and reasonably expect the same for the current year).
                 </div>
                 <div className="steps">
                     {kycStatus === null && <div className="h">Attach Document</div>}
