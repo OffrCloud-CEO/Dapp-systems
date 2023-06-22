@@ -81,7 +81,7 @@ const FormPart = () => {
     }
 
     function generateVerificationUrl() {
-        const baseUrl = 'https://dapp-systems.vercel.app';
+        const baseUrl = 'https://demo.offrcloud.com';
         const code = generateVerificationCode();
         return [`${baseUrl}/verify?token=${code}`, code];
     }
