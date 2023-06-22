@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
 
 const UploadArea = ({func, status, viewImg, uploadType }) => {
-    const [previewImage, setPreviewImage] = useState(null);
+    const [previewFile, setPreviewImage] = useState(null);
     const formRef =  useRef();
 
-    const handleImageChange = (e) => {
+    const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         if (!selectedFile) {
             return;
@@ -41,25 +41,25 @@ const UploadArea = ({func, status, viewImg, uploadType }) => {
             <form action="" ref={formRef}>
                 {!viewImg && <input
                     type="file"
-                    accept={uploadType === 1 ? ".doc,.docx,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,text/plain" :"image/*"}
+                    accept={uploadType === 1 ? ".pdf,application/pdf" :"image/*"}
                     className={`select-file`}
-                    onChange={handleImageChange}
+                    onChange={handleFileChange}
                 />}
             </form>
             <div className="info-txt">
-                {viewImg === undefined && previewImage !== null && <span>
+                {viewImg === undefined && previewFile !== null && <span>
                     {uploadType ===1 ? "Click to Change Document": "Click to Change image"}
                 </span>}
-                {viewImg === undefined && previewImage === null && <span>
+                {viewImg === undefined && previewFile === null && <span>
                     {uploadType ===1 ? "Click to upload Document": "Click to upload image"}
                 </span>}</div>
                 {uploadType !== 1 && <div className="preview-image">
-                    {viewImg === undefined && <img src={previewImage} alt="" />}
+                    {viewImg === undefined && <img src={previewFile} alt="" />}
                     {viewImg && <img src={viewImg} alt="" />}
                 </div>}
                 {uploadType === 1 && <div className="preview-image">
-                    {viewImg && (<iframe src={viewImg} title="Preview Document" />)}
-                    {viewImg === undefined && (<iframe src={previewImage} title="Preview Document" />)}
+                    {viewImg && (<iframe src={viewImg} title="Previewing Document" />)}
+                    {viewImg === undefined && (<iframe src={previewFile} title="Preview Document" />)}
                 </div>}
             {!viewImg && <div className="clear" onClick={handleResetImg}>
                 <img src="https://gineousc.sirv.com/Images/icons/icons8-broom-96.png" alt="" />

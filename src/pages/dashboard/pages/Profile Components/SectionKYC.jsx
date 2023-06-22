@@ -46,20 +46,6 @@ const SectionKYC = () => {
         setDobChange(dob);
     }, [mobile, dob, fullname]);
 
-    useEffect(()=>{
-        switch(kycStatus){
-            case 0:
-                setReadOnlyStatus(true);
-                break;
-            case 1:
-                setReadOnlyStatus(true);
-                break;
-            default:
-                setReadOnlyStatus(false);
-                break;
-        }
-    }, [kycStatus]);
-
 
     const [errorWatch, setErrorWatch] = useState({
         addrs: false,
@@ -107,6 +93,21 @@ const SectionKYC = () => {
         }
 
     }
+    
+    useEffect(()=>{
+        switch(kycStatus){
+            case 0:
+                setReadOnlyStatus(true);
+                break;
+            case 1:
+                setReadOnlyStatus(true);
+                break;
+            default:
+                setReadOnlyStatus(false);
+                break;
+        }
+    }, [kycStatus]);
+
 
     useEffect(()=>{
         if (kycData !== null) {
@@ -484,7 +485,7 @@ const SectionKYC = () => {
                                 placeholder='Jeffrey Dahmer' 
                                 value={fullnameChange} 
                                 onChange={(e)=>setFullnameChange(e.target.value)} 
-                                readOnly={!readOnlyStatus}
+                                readOnly={readOnlyStatus}
                                 required
                             />
                         </div>
@@ -508,7 +509,7 @@ const SectionKYC = () => {
                                 onChange={phoneInput}
                                 placeholder='+555 555 5555' 
                                 onFocus={()=>{
-                                    if(kycStatus !==0 && kycStatus !==1){
+                                    if(!readOnlyStatus){
                                         setEditingPhone(true)
                                     }
                                 }}
@@ -517,7 +518,7 @@ const SectionKYC = () => {
                                         setEditingPhone(false);
                                     }
                                 }}
-                                readOnly={!readOnlyStatus}
+                                readOnly={readOnlyStatus}
                                 required 
                             />
                         </div>
@@ -530,7 +531,7 @@ const SectionKYC = () => {
                                 defaultValue={dobChange} 
                                 onChange={(e)=>setDobChange(e.target.value)}
                                 className="inp" 
-                                readOnly={!readOnlyStatus} 
+                                readOnly={readOnlyStatus} 
                                 required
                             />
                         </div>
@@ -732,7 +733,6 @@ const SectionKYC = () => {
                     {kycStatus !== null && kycStatus < 2 && <div className="h">Uploaded Document</div>}
                     {kycStatus === null && <UploadArea uploadType={1} func={setAccreditedInvestorDoc} />}
                     {kycStatus === 2 && <UploadArea uploadType={1} func={setAccreditedInvestorDoc} />}
-                    {accreditedInvestorDoc}
                     {kycStatus < 2 && kycStatus !== null && <UploadArea status={1} viewImg={accreditedInvestorDoc} func={setBackImg} uploadType={1} />}
                 </div>
             </section>}

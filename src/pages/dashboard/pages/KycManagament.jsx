@@ -48,7 +48,7 @@ const KycManagament = () => {
                         case 1:
                             verifiedValue++;
                             break;
-                        case 0:
+                        case 2:
                             declinedValue++;
                             break;
                     
