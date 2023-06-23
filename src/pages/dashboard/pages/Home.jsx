@@ -111,7 +111,7 @@ const HomePage = () => {
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/coins.svg"} detail={`${coinInfo ? (coinInfo?.totalSupply > 0 ? ((formatNumFreeStyle((coinInfo.totalSupply)))) : '0') : ''}`} p={"Total supply"} />
         </div>
         <div className="div-3">
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/dc.png"} detail={"5%"} p={"Yield over 12 months"} />
+          <GridCard ico={"https://gineousc.sirv.com/Images/icons/percentage.png"} detail={"5%"} p={"Yield over 12 months"} />
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/tr.png"} detail={`$ ${Number((1 / Number(coinInfo?.tokenPriceRates))).toLocaleString()}`} p={`Price`} />
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/analytics.svg"} detail={coinInfo ? formatNumFreeStyle(coinInfo?.cap) : ''} type={'cap'} p={"Max Supply"} />
         </div>
