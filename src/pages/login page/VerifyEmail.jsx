@@ -40,7 +40,7 @@ const VerifyEmail = () => {
                 throw new Error("Wallet doesn't Exist in Database!");
             }
         }catch (error){
-            throw Error(error);
+            throw new Error(error);
         }
     }
 
@@ -50,8 +50,6 @@ const VerifyEmail = () => {
             const tokenSnap = await getDoc(dataRef);
 
             if (tokenSnap.exists()) {
-                
-                
                 const tokenInfo = tokenSnap.data();
                 const { status, user, email, name } = tokenInfo;
 
@@ -84,10 +82,10 @@ const VerifyEmail = () => {
 
             } else {
                 setVerifyState(2);
-                throw ("Invalid Token!");
+                throw new Error("Invalid Token!");
             }
         }catch (error){
-            throw Error(error);
+            throw new Error(error);
         }
     }
 
