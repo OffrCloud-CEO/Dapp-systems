@@ -290,7 +290,7 @@ const SectionProfile = () => {
                     {editing && <div className="form-grid">
                         <div className={`form-g ${errorWatch.fullname ? "err" : ''}`}>
                             <label>Full Name: </label>
-                            <input type="text" onChange={(e)=>setFullname(e.target.value)} value={escapeString(fullname)} className="inp" placeholder='Jeffrey Dahmer' required />
+                            <input type="text" onChange={(e)=>setFullname(e.target.value)} value={escapeString(fullname)} className="inp" placeholder='Chris Wilkinsonr' required />
                         </div>
 
                         <div className={`form-g ${errorWatch.displayname ? "err" : ''}`}>

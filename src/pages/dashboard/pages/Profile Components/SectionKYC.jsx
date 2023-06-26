@@ -310,7 +310,7 @@ const SectionKYC = () => {
         return filename01Url;
     }
 
-    // Update Personal Informations if changed
+    // Update Personal Information if changed
     const updateInfo = async() =>{
         try {
             const docRef = collection(fireStore, "user_credentials");
@@ -482,7 +482,7 @@ const SectionKYC = () => {
                             <input 
                                 type="text" 
                                 className="inp" 
-                                placeholder='Jeffrey Dahmer' 
+                                placeholder='Chris Wilkinsonr' 
                                 value={fullnameChange} 
                                 onChange={(e)=>setFullnameChange(e.target.value)} 
                                 readOnly={readOnlyStatus}
@@ -614,7 +614,7 @@ const SectionKYC = () => {
                     <div className="numbering">02</div>
                     <div className="txt">
                         <span>Document Upload</span>
-                        <span>To confirm your identity, please upload one of your documents.</span>
+                        <span>To confirm your identity, please upload a legal documents.</span>
                     </div>
                 </div>
                 <div className="warning">
@@ -681,17 +681,17 @@ const SectionKYC = () => {
                 </div>}
 
                 <div className="steps">
-                    {kycStatus === null && <div className="h">Please upload a copy of your passport here. (FRONT)</div>}
-                    {kycStatus === 2 &&<div className="h">Please upload a copy of your passport here. (FRONT)</div>}
-                    {kycStatus !== null && kycStatus < 2 && <div className="h">Uploaded Document. (FRONT)</div>}
+                    {kycStatus === null && <div className="h">Please upload a copy of your ID here. (FRONT)</div>}
+                    {kycStatus === 2 &&<div className="h">Please upload a copy of your ID here. (FRONT)</div>}
+                    {kycStatus !== null && kycStatus < 2 && <div className="h">Uploaded ID Document. (FRONT)</div>}
                     {kycStatus === null && <UploadArea func={setFrontImg} />}
                     {kycStatus === 2 && <UploadArea func={setFrontImg} />}
                     {kycStatus < 2 && kycStatus !== null && <UploadArea status={kycStatus} viewImg={frontImgUrl} func={setFrontImg} />}
                 </div>
                 <div className="steps">
-                    {kycStatus === null && <div className="h"> Please upload a copy of your passport here. (BACK)</div>}
-                    {kycStatus === 2 && <div className="h"> Please upload a copy of your passport here. (BACK)</div>}
-                    {kycStatus !== null && kycStatus < 2 && <div className="h">Uploaded Document. (BACK)</div>}
+                    {kycStatus === null && <div className="h"> Please upload a copy of your ID here. (BACK)</div>}
+                    {kycStatus === 2 && <div className="h"> Please upload a copy of your ID here. (BACK)</div>}
+                    {kycStatus !== null && kycStatus < 2 && <div className="h">Uploaded ID Document. (BACK)</div>}
                     {kycStatus === null && <UploadArea func={setBackImg} />}
                     {kycStatus === 2 && <UploadArea func={setBackImg} />}
                     {kycStatus < 2 && kycStatus !== null && <UploadArea status={kycStatus} viewImg={backImgUrl} func={setBackImg} />}
@@ -725,7 +725,7 @@ const SectionKYC = () => {
                     </div>
                 </div>
                 <div className="warning">
-                    Attach profit Profit & Loss (P&L) documents that proves you are an accredited investor (i.e Your Networth is over 1 Million Dollars, Excluding primary residence & Income is over $200K in each prior 2 year and reasonably expect the same for the current year).
+                    Attach Profit & Loss (P&L) documents that proves you are an accredited investor (i.e Your Networth is over 1 Million Dollars, Excluding primary residence & Income is over $200K in each prior 2 year and reasonably expect the same for the current year).
                 </div>
                 <div className="steps">
                     {kycStatus === null && <div className="h">Attach Document</div>}
@@ -744,7 +744,7 @@ const SectionKYC = () => {
                         <input type="checkbox" onChange={(e)=>setAgreedTerms(e.target.checked)} ref={checkRef} />
                         <div className="checkmark" onClick={()=>checkRef.current.click()}></div>
                     </div>
-                    <span>I Have Read The <span className='url' onClick={()=>setViewingTerms(true)}>Terms Of Condition</span> And <span className='url' onClick={()=>setViewingTerms(true)}>Privary Policy</span>.</span>
+                    <span>I Have Read The <span className='url' onClick={()=>setViewingTerms(true)}>Terms Of Condition</span> And <span className='url' onClick={()=>setViewingTerms(true)}>Privacy Policy</span>.</span>
                 </div>
                 <div className="r">
                     <div className="containerd">
@@ -774,7 +774,7 @@ const SectionKYC = () => {
                         <input type="checkbox" onChange={(e)=>setAgreedTerms(e.target.checked)} ref={checkRef} />
                         <div className="checkmark" onClick={()=>checkRef.current.click()}></div>
                     </div>
-                    <span>I Have Read The <span className='url' onClick={()=>setViewingTerms(true)}>Terms Of Condition</span> And <span className="url" onClick={()=>setViewingTerms(true)}>Privary Policy</span>.</span>
+                    <span>I Have Read The <span className='url' onClick={()=>setViewingTerms(true)}>Terms Of Condition</span> And <span className="url" onClick={()=>setViewingTerms(true)}>Privacy Policy</span>.</span>
                 </div>
                 <div className="r">
                     <div className="containerd">
