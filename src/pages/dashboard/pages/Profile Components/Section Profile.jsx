@@ -290,16 +290,16 @@ const SectionProfile = () => {
                     {editing && <div className="form-grid">
                         <div className={`form-g ${errorWatch.fullname ? "err" : ''}`}>
                             <label>Full Name: </label>
-                            <input type="text" onChange={(e)=>setFullname(e.target.value)} value={escapeString(fullname)} className="inp" placeholder='Chris Wilkinsonr' required />
+                            <input type="text" onChange={(e)=>setFullname(e.target.value)} value={escapeString(fullname)} className="inp" placeholder='Chris Wilkinson' required />
                         </div>
 
                         <div className={`form-g ${errorWatch.displayname ? "err" : ''}`}>
                             <label>Display Name: </label>
-                            <input type="text" onChange={(e)=>setDisplayname(e.target.value)} value={escapeString(displayname)} className="inp" placeholder='@JeffreyDahmer' required />
+                            <input type="text" onChange={(e)=>setDisplayname(e.target.value)} value={escapeString(displayname)} className="inp" placeholder='@ChrisWilkinson' required />
                         </div>
                         <div className={`form-g ${errorWatch.email ? "err" : ''}`}>
                             <label>Email Address: </label>
-                            <input type="email" className="inp" value={escapeString(email)}  placeholder='jeffrey@murder.com' readOnly />
+                            <input type="email" className="inp" value={escapeString(email)}  placeholder='chriswilkinson@mail.com' readOnly />
                         </div>
                         <div className={`form-g ${errorWatch.mobile ? "err" : ''}`}>
                             <label>Mobile Number: {errorWatch.mobile ? `Max: ${phoneMaxLength}` : ""}</label>

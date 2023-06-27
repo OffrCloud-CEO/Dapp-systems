@@ -482,7 +482,7 @@ const SectionKYC = () => {
                             <input 
                                 type="text" 
                                 className="inp" 
-                                placeholder='Chris Wilkinsonr' 
+                                placeholder='Chris Wilkinson' 
                                 value={fullnameChange} 
                                 onChange={(e)=>setFullnameChange(e.target.value)} 
                                 readOnly={readOnlyStatus}
@@ -495,7 +495,7 @@ const SectionKYC = () => {
                                 type="email" 
                                 className="inp" 
                                 value={email} 
-                                placeholder='jeffrey@murder.com' 
+                                placeholder='Chris Wilkinson.com' 
                                 readOnly 
                                 required
                             />
