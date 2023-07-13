@@ -13,6 +13,7 @@ import Terms from '../../super components/Terms';
 
 const ErrSection = ({errorMessage, clean, cleanData, keyValue}) => {
     const [innerStatus, setInnerStatus] = useState(true);
+    // const [] = usestate
 
     useEffect(()=>{
         setTimeout(() => {

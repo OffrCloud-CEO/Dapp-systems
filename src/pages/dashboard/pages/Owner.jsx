@@ -293,9 +293,21 @@ const Owner = () => {
                 {coin != null && coin ? `${liveData.sold > 0 ? formatNum((Number(liveData.sold).toFixed())) : '0.00'}` : `---`}
               </div>
             </div>
+          </div>
+
+          <div className="div-2">
             <div className="kard">
               <div className="tag">
                 Contract USDC Balance
+                <img src="https://gineousc.sirv.com/Images/icons/money%20(1).svg" alt="" />
+              </div>
+              <div className="value">
+                {coin != null && coin ? `$${liveData.contractUSC > 0 ? formatNum((Number(liveData.contractUSC)).toFixed()) : '0.00'}` : `---`}
+              </div>
+            </div>
+            <div className="kard">
+              <div className="tag">
+                Contract ETH Balance
                 <img src="https://gineousc.sirv.com/Images/icons/money%20(1).svg" alt="" />
               </div>
               <div className="value">
