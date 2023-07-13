@@ -101,7 +101,7 @@ export function formatNum(params) {
 
 export function formatNumFreeStyle(params) {
   let num = params;
-  if (isBigNumber(params) || num > (10**19)) {
+  if (isBigNumber(params) || num > (10 ** 19)) {
     num = (bigNum(params)) / (10 ** 18);
   }
   if (num > 1) {
@@ -115,10 +115,10 @@ export function formatNumFreeStyle(params) {
 
 export function formatEth(params) {
   let num = params;
-  if (isBigNumber(params) || num > (10**19)) {
+  if (isBigNumber(params) || num > (10 ** 19)) {
     num = (bigNum(params)) / (10 ** 18);
   }
-  
+
   return num;
 }
 
@@ -127,14 +127,14 @@ export function moneyFormat(params, test) {
   if (checkFloatLength(params) > 3 && test === 1) {
     params = params.toFixed(3);
     returnData = params.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }else if (checkFloatLength(params) > 3 && test === 2) {
+  } else if (checkFloatLength(params) > 3 && test === 2) {
     params = params.toFixed(8);
     const sp = (params).toString().split(".");
     const fP = sp[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     const cP = sp.length > 1 ? sp[1] : "";
     returnData = (`${fP}.${cP}`);
   }
-  return returnData;  
+  return returnData;
 }
 
 // Fetch Eth Price
@@ -164,7 +164,7 @@ export function isObjectEmpty(obj) {
   return true;
 }
 
-export const toEth = (e) =>{
+export const toEth = (e) => {
   const Web3 = require("web3");
   const web3 = new Web3(new Web3.providers.HttpProvider("https://goerli.infura.io/v3/1b56ed566d884e259fec1d6f94f581b0"));
 
@@ -172,7 +172,7 @@ export const toEth = (e) =>{
 }
 
 export function interpretBigNumber(bigNumber) {
-    return parseInt(String(bigNumber.hex).slice(2), 16);
+  return parseInt(String(bigNumber.hex).slice(2), 16);
 }
 
 export function isValidEthAddress(address) {
@@ -184,9 +184,9 @@ export function isValidEthAddress(address) {
 }
 
 export function pasteClipboard(func) {
-    navigator.clipboard.readText().then(text => {
-      func(String(text).trim());
-    });
+  navigator.clipboard.readText().then(text => {
+    func(String(text).trim());
+  });
 }
 
 export function calculateTimeDifference(givenTime) {
@@ -199,29 +199,29 @@ export function calculateTimeDifference(givenTime) {
   const year = day * 365;
 
   if (difference < minute) {
-    return `${Math.round(difference/1000)} sec${Math.round(difference/1000) === 1 ? '' : 's'} ago`;
+    return `${Math.round(difference / 1000)} sec${Math.round(difference / 1000) === 1 ? '' : 's'} ago`;
   } else if (difference < hour) {
-    return `${Math.round(difference/minute)} mins ago`;
+    return `${Math.round(difference / minute)} mins ago`;
   } else if (difference < day) {
-    return `${Math.round(difference/hour)} hrs ago`;
+    return `${Math.round(difference / hour)} hrs ago`;
   } else if (difference < month) {
-    return `${Math.round(difference/day)} days ago`;
+    return `${Math.round(difference / day)} days ago`;
   } else if (difference < year) {
-    return `${Math.round(difference/month)} months ago`;
+    return `${Math.round(difference / month)} months ago`;
   } else {
-    return `${Math.round(difference/year)} yrs ago`;
+    return `${Math.round(difference / year)} yrs ago`;
   }
 }
 
-export const getPercentage = (start, end) =>{
+export const getPercentage = (start, end) => {
   const startDate = start;
   const endDate = end;
-  const now  = new Date();
+  const now = new Date();
 
   const difference = endDate.getTime() - now.getTime();
   const differenceInit = endDate.getTime() - startDate.getTime();
 
-  const percent = (100 -(100/differenceInit) * difference);
+  const percent = (100 - (100 / differenceInit) * difference);
 
   return (percent).toPrecision(2);
 }
@@ -238,7 +238,7 @@ export function getDateDiff(startdate, enddate) {
   let output = "";
   if (days > 0) {
     output += days + " days ";
-  }else if (hours > 0) {
+  } else if (hours > 0) {
     output += hours + " hrs ";
   }
   output += "Left";
@@ -262,7 +262,7 @@ export function formatLargeNumber(num, len) {
     case "max":
       suffixes = ['', 'k', ' Million', ' Billion', ' Trillion'];
       break;
-  
+
     default:
       suffixes = ['', 'k', 'M', 'B', 'T'];
       break;
@@ -304,14 +304,14 @@ export function daysToText(days) {
     return `${months} month${months > 1 ? 's' : ''}`;
   } else if (days >= 1) {
     return `${days} day${days > 1 ? 's' : ''}`;
-  }else{
+  } else {
     const value = Math.floor(days * (24 * 60 * 60));
     const hours = Math.floor(value / (60 * 60));
     const minute = Math.floor(value / (60));
     if (hours > 0) {
-      return `${hours} hour${hours > 1 ? "s": '' }`;
-    }else {
-      return `${minute} minute${minute > 1 ? "s": '' }`;
+      return `${hours} hour${hours > 1 ? "s" : ''}`;
+    } else {
+      return `${minute} minute${minute > 1 ? "s" : ''}`;
     }
   }
 }
@@ -346,7 +346,7 @@ export const escapeString = (str) => {
 
 export const formatPhoneNumber = (phoneNumber, nation) => {
   let phoneDefault;
-  countryListWithPhone.map(i =>{
+  countryListWithPhone.map(i => {
     if (i.code === nation) {
       phoneDefault = (i.phone);
     }

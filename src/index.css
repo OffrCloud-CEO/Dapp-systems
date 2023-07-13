@@ -3661,23 +3661,36 @@ a:any-link {
   min-width: 20rem;
   transition: var(--trans);
   padding: 1rem;
-  outline: none;
+  outline: 1px solid transparent;
 }
 
-.form-section .form-g.err .inp {
-  border: 1px solid var(--bad-btn);
+
+
+.form-g.err .inp {
+  outline: 2px solid transparent;
+  border: 2px solid var(--bad-btn);
 }
 
-.form-section .form-g:not(.err) .inp:focus {
-  border: 1px solid var(--main-blue);
+.form-g.err .inp:focus {
+  outline: 2px solid var(--bad-btn);
+  border: 2px solid transparent;
 }
 
-.form-section .form-g:not(.err) .inp:valid {
-  border: 1px solid var(--main-blue);
+.form-g:not(.err) .inp:focus {
+  outline: 2px solid var(--main-blue);
+  border: 2px solid transparent;
 }
 
-.form-section .btnx.bad {
-  background-color: var(--bad-btn);
+.form-g:not(.err) .inp:not(:placeholder-shown):valid {
+  border: 2px solid var(--main-blue);
+  outline: 2px solid transparent;
+}
+
+
+
+.form-section .btnx.err {
+  all: unset;
+  background-color: rgba(0, 0, 0, .05);
 }
 
 .form-section .btnx:has(img) {
@@ -3686,6 +3699,15 @@ a:any-link {
 
 .form-section .btnx img {
   filter: invert(1);
+  mix-blend-mode: screen;
+  height: 2rem;
+}
+
+.disabledBtn:has(img) {
+  padding: 5px 2.25rem;
+}
+
+.disabledBtn img {
   mix-blend-mode: screen;
   height: 2rem;
 }
@@ -3709,6 +3731,19 @@ a:any-link {
   margin: .25rem 0;
   max-width: fit-content;
   padding: 0.75rem 2.25rem;
+  transition: var(--trans);
+}
+
+.disabledBtn {
+  background-color: rgba(0, 0, 0, .05);
+  color: rgba(0, 0, 0, .7);
+  font-weight: 450;
+  font-size: 1rem;
+  text-align: center;
+  border-radius: .35rem;
+  cursor: not-allowed;
+  margin: .25rem 0;
+  padding: 1rem 2.25rem;
   transition: var(--trans);
 }
 
