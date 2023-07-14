@@ -61,7 +61,7 @@ const DividendForm = ({ status, type, defaultValue }) => {
             const walletToCheck = String(wallet).length > 0 ? wallet : user;
             const valueToDisplay = await tokenDividendManagement.claimableDividendsOf(walletToCheck);
 
-            setValue(formatNumFreeStyle(valueToDisplay));
+            setValue(Number(ethers.utils.formatEther(valueToDisplay)).toLocaleString());
 
             setLoading(false);
         } catch (error) {
@@ -83,7 +83,7 @@ const DividendForm = ({ status, type, defaultValue }) => {
             const walletToCheck = String(wallet).length > 0 ? wallet : user;
             const valueToDisplay = await tokenDividendManagement.claimedDividendsHistoryOf(walletToCheck);
 
-            setValue(formatNumFreeStyle(valueToDisplay));
+            setValue(Number(ethers.utils.formatEther(valueToDisplay)).toLocaleString());
 
             setLoading(false);
         } catch (error) {

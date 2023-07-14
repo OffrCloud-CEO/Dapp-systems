@@ -165,27 +165,35 @@ a:any-link {
   max-height: fit-content;
 }
 
+.errHanger {
+  position: fixed;
+  top: 0;
+  gap: 1rem;
+  flex-direction: column;
+  left: 50%;
+  display: flex;
+  height: fit-content;
+  padding: 1rem;
+  transform: translateX(-50%);
+}
+
 .login main .formPart .errorMsg.show {
   transition: var(--trans);
-  bottom: 1rem;
   animation: beatingHeartErr 1s linear infinite;
 }
 
 .login main .formPart .errorMsg{
-  position: fixed;
-  bottom: -100%;
   transition: .5s linear;
   text-align: center;
   font-size: .9rem;
-  max-width: calc(100vw - 1rem);
-  transform: translateX(-50%);
-  left: 50%;
+  pointer-events: none;
+  max-width: calc(100vw - 2rem);
   padding: 1rem;
-  border: 1px solid transparent;
+  border: 2px solid var(--bad-btn);
   box-shadow: 0 0 10px rgba(238, 50, 97, .15);
-  background-color: var(--white);
+  background-color: #091036;
   border-radius: .35rem;
-  color: var(--bad-btn);
+  color: var(--white);
 }
 
 .login main .verify {
@@ -239,7 +247,6 @@ a:any-link {
   padding: 2rem 3rem;
   font-size: 1rem;
   gap: 10px;
-  justify-content: center;
   overflow: auto;
   scroll-behavior: smooth;
   flex: 1;
@@ -251,13 +258,20 @@ a:any-link {
 }
 
 .formPart .title {
-  font-size: 1.25em;
+  font-size: 1.5em;
+  text-transform: capitalize;
+  margin-top: 1rem;
   font-weight: 600;
+  text-align: center;
   padding: 5px 0;
 }
 
-.formPart p {
-  opacity: .5;
+.formPart .p-center {
+  opacity: .45;
+  max-width: 70%;
+  margin-bottom: 1rem;
+  margin: auto;
+  text-align: center;
 }
 
 .formPart section {

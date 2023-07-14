@@ -42,6 +42,7 @@ const Dashboard = () => {
   // Live Token Data Management Variables
   const [dividendDate, setDividendDate] = useState('');
   const [ethBalance, setEthBalance] = useState(null);
+  const [tokenSaleEthBalance, setTokenSaleEthBalance] = useState(null);
   const [lastBlockTime, setLastBlockTime] = useState(0);
   const [usdcBalance, setUsdcBalance] = useState(0);
   const [tokenBalance, setTokenBalnce] = useState(0);
@@ -382,6 +383,13 @@ const Dashboard = () => {
         setEthBalance(ethers.utils.formatEther(newBalance));
       });
 
+      async function getTokenSaleEthBalance(){
+        const tokenSaleEthBalanceInit = await provider.getBalance(tokenSaleAddress);
+        setTokenSaleEthBalance(ethers.utils.formatEther(tokenSaleEthBalanceInit));
+      }
+
+      getTokenSaleEthBalance();
+
       setEthBalance(ethers.utils.formatEther(ethBal));
 
       const tokenHandler = new ethers.Contract(tokenSaleAddress, tokenSaleABI, signer);
@@ -573,12 +581,6 @@ const Dashboard = () => {
         });
       });
 
-      tokenDividendManagement.on(FundsReleasedEvent, async () => {
-        const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
-
-        setContractUsdcBalance(ethers.utils.formatEther(contractUSDC));
-      });
-
       tokenDividendManagement.on(DividendPeriodStartedEvent, async () => {
         const divIntervalCount = Number(await tokenDividendManagement.getDividendIntervalCount());
         const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
@@ -658,6 +660,26 @@ const Dashboard = () => {
         setKycDataList(KYCList);
       });
 
+      token.on(TransferEvent, async (from, to, amount, event) => {
+        const myBalance = await token.balanceOf(user);
+        const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
+        const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
+        if (from === user || to === user) {
+          setClaimableData({
+            claimable: claimableDividendsOf,
+            withdrawn: claimedDividendsOf,
+          });
+          setTokenBalnce(myBalance);
+        }
+      });
+
+      tokenHandler.on(FundsReleasedEvent, async () => {
+        const contractUSDC = await usdcInstance.balanceOf(tokenSaleAddress);
+        setContractUsdcBalance(ethers.utils.formatEther(contractUSDC));
+
+        getTokenSaleEthBalance();
+      });
+
       tokenHandler.on(TokenSaleStartedEvent, async () => {
         const isSaleOpen = await tokenHandler.tokensale_open();
         const salesEndDate = Number(await tokenHandler.getSaleEndDate());
@@ -710,20 +732,9 @@ const Dashboard = () => {
         setTokenBalnce(myBalance);
         setSoldValue(sold);
         setTotalSupplyBalance(totalSupply);
+        getTokenSaleEthBalance();
       });
 
-      token.on(TransferEvent, async (from, to, amount, event) => {
-        const myBalance = await token.balanceOf(user);
-        const claimableDividendsOf = await tokenDividendManagement.claimableDividendsOf(user);
-        const claimedDividendsOf = await tokenDividendManagement.claimedDividendsHistoryOf(user);
-        if (from === user || to === user) {
-          setClaimableData({
-            claimable: claimableDividendsOf,
-            withdrawn: claimedDividendsOf,
-          });
-          setTokenBalnce(myBalance);
-        }
-      });
     } catch (error) {
       const reason = error.reason ? `Error: ${error.reason}` : "Please make sure you are on the right Network (Sepolia Networt), please refreash the page after update.";
       setErrorMessage(reason);
@@ -812,7 +823,7 @@ const Dashboard = () => {
   }, [coinBase]);
 
   return (
-    <contextData.Provider value={{ adminConnected, showUserCard, setShowUserCard, dividendDate, dividendUsdcBalance, lastBlockTime, kycVerified, ethBalance, usdcBalance, claimableData, kycDataList, dividendInitialInfo, dividendSessionData, soldValue, contractUsdcBalance, kycData, loading, rootData, tokenBalance, totalSupplyBalance, tokenSaleInfo, updateTokenSoldToBatchData, batchData, storeDataUser, coinBase, contract, setStoreDataUser, setLogOut, transactions, setTransactions }}>
+    <contextData.Provider value={{ adminConnected, showUserCard, setShowUserCard, dividendDate, dividendUsdcBalance, lastBlockTime, kycVerified, ethBalance, usdcBalance, claimableData, kycDataList, dividendInitialInfo, dividendSessionData, soldValue, contractUsdcBalance, kycData, loading, rootData, tokenBalance, totalSupplyBalance, tokenSaleInfo, updateTokenSoldToBatchData, batchData, storeDataUser, coinBase, contract, setStoreDataUser, setLogOut, transactions, setTransactions, tokenSaleEthBalance }}>
       <div className="top-logo-holder">
         <Link to={"/dashboard"}><img src="https://gineousc.sirv.com/Images/loader-ico.png" alt="" /></Link>
       </div>

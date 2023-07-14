@@ -386,6 +386,17 @@ const FormPart = () => {
                 <span>OffrCloud</span>
             </a>
             <section>
+                <div className="title">
+                    {!connected && "Connect your wallet"}
+                    {connected && accountExist && `Welcome Back, ${nameText.split(" ")[1]}`}
+                    {connected && !accountExist && `Create an account`}
+                </div>
+                <div className="p-center">
+                    {!connected && <span>To begin accessing the Dapp&apos;s features, securely connect your wallet for seamless login.</span> }
+                    {connected && accountExist && accountVerified && <span>Continue to your dashboard</span> }
+                    {connected && accountExist && !accountVerified && <span>We&apos;ve sent verification email to your address, please verify your account to get access to your dashboard</span> }
+                    {connected && !accountExist && <span>Signup with us to join the OffrCloud community.</span> }
+                </div>
                 <div className="form-g">
                     <label>
                         {connected ? "Connected to:" : "Connect your wallet!"}
@@ -423,9 +434,11 @@ const FormPart = () => {
                     </div>
                 </div>
             </section>
-            {errorMessage.length > 0 && errorMessage.map(i=> (
-                <ErrSection key={i.key} keyValue={i.key} errorMessage={i.msg} clean={setErrorMessage} cleanData={errorMessage}/>
-            ))}
+            <div className="errHanger">
+                {errorMessage.length > 0 && errorMessage.map(i => (
+                    <ErrSection key={i.key} keyValue={i.key} errorMessage={i.msg} clean={setErrorMessage} cleanData={errorMessage} />
+                ))}
+            </div>
             <Link to={"/dashboard"} ref={contRef} style={{ display: 'none' }} >to Dashboard</Link>
             <Link to={"/verify"} ref={verifyRef} style={{ display: 'none' }} >to Verfication</Link>
         </section>

@@ -14,7 +14,7 @@ import { fireStore } from "../../../firebase/sdk";
 /* Creating a context object. */
 export const ownerContext = React.createContext();
 const Owner = () => {
-  const { rootData, batchData, totalSupplyBalance, tokenSaleInfo, kycDataList, soldValue, contractUsdcBalance,} = useContext(contextData);
+  const { rootData, batchData, totalSupplyBalance, tokenSaleInfo, kycDataList, soldValue, contractUsdcBalance, tokenSaleEthBalance} = useContext(contextData);
   const [initiateTokenSale, setInitiateTokenSale] = useState(false);
   const [pending, setPending] = useState(false);
   const [coin, setCoin] = useState(null);
@@ -28,6 +28,7 @@ const Owner = () => {
     startDate: 0,
     endDate: 0,
     totalSupply: 0,
+    ethBalance: 0,
   });
 
   /**
@@ -160,6 +161,7 @@ const Owner = () => {
           startDate: startDate, 
           endDate: endDate,
           totalSupply: totalSupply,
+          ethBalance: tokenSaleEthBalance,
         });
       }else{
         setLiveData({ 
@@ -168,6 +170,7 @@ const Owner = () => {
           kycedUsers: kycedUsersList.length,
           sold: sold,
           contractUSC: contractUsdcBalance,
+          ethBalance: tokenSaleEthBalance,
           totalSupply: totalSupply,
         });
       }
@@ -311,7 +314,7 @@ const Owner = () => {
                 <img src="https://gineousc.sirv.com/Images/icons/money%20(1).svg" alt="" />
               </div>
               <div className="value">
-                {coin != null && coin ? `$${liveData.contractUSC > 0 ? formatNum((Number(liveData.contractUSC)).toFixed()) : '0.00'}` : `---`}
+                {coin != null && coin ? `eth ${liveData.ethBalance > 0 ? formatNum((Number(liveData.ethBalance))) : '0.00'}` : `---`}
               </div>
             </div>
           </div>
@@ -336,7 +339,7 @@ const Owner = () => {
           {coin && coin?.isOwner &&  <div className="btnx-row">
             <label>Action Buttons</label>
             <div className="row">
-              <div className={`btnx ${coin != null && !liveData.status && liveData.contractUSC > 0 ? "" : "disable" }`} onClick={() => handleBtnxTriggers('releaseFund')}>
+              <div className={`btnx ${coin != null && !liveData.status && (Number(liveData.contractUSC) + Number(liveData.ethBalance)) > 0 ? "" : "disable" }`} onClick={() => handleBtnxTriggers('releaseFund')}>
                 Release funds
               </div>
               <div className={`btnx ${coin != null && !liveData.status ? "start" : "disable" }`} onClick={() => handleBtnxTriggers('start')}>
