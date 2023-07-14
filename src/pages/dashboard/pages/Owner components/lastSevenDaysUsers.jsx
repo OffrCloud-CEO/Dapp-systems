@@ -127,16 +127,16 @@ const LastSevenDaysUsers = () => {
                     },
                     responsive: [
                         {
-                            breakpoint: 768, // set the breakpoint at which the chart should change its size
+                            breakpoint: 0, // Set the breakpoint to 0, which means it will always apply the options below this breakpoint
                             options: {
                                 chart: {
-                                    width: (14 * 24) // set the chart height for screens below the breakpoint
+                                    width: "99%", // Set the width to 100% to fill the available width
                                 },
                                 legend: {
-                                    position: "bottom"
-                                }
-                            }
-                        }
+                                    position: "bottom",
+                                },
+                            },
+                        },
                     ],
                     dataLabels: {
                         enabled: true

@@ -311,7 +311,7 @@ const Owner = () => {
             <div className="kard">
               <div className="tag">
                 Contract ETH Balance
-                <img src="https://gineousc.sirv.com/Images/icons/money%20(1).svg" alt="" />
+                <img src="https://gineousc.sirv.com/Images/icons/eth.png" alt="" />
               </div>
               <div className="value">
                 {coin != null && coin ? `eth ${liveData.ethBalance > 0 ? formatNum((Number(liveData.ethBalance))) : '0.00'}` : `---`}

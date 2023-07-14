@@ -285,9 +285,18 @@
     .dash-row .div-2 div {
         width: 22rem;
     }
+    
+    .dash-row .div-2:has(.exempt) div {
+        width: fit-content;
+        flex: 1;
+    }
 
     .dash-row .div-1 div {
         width: 22rem;
+    }
+
+    .kard.exempt{
+        padding: 5px;
     }
 
     .kard .value.address {

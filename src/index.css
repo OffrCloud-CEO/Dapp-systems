@@ -2902,10 +2902,8 @@ a:any-link {
 
 .kard .grided {
   display: flex;
-  min-width: 20rem;
   width: 100%;
   flex-wrap: wrap;
-  align-items: stretch;
   gap: .25rem;
   margin: auto;
 }
@@ -2917,16 +2915,15 @@ a:any-link {
   gap: .25rem;
 }
 
-.kard .grided>div.full {
-  min-width: 88%;
+.kard .grided > .full {
+  min-width: 20rem;
   color: var(--main-blue);
 }
 
-.kard .grided>div {
+.kard .grided > div {
   all: unset;
   min-width: fit-content;
   white-space: nowrap;
-  width: 100%;
   flex: 1;
   padding: 1rem 1.25rem;
   border-radius: .3rem;
