@@ -115,10 +115,7 @@ const HomePage = () => {
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/tr.png"} detail={`$ ${Number((1 / Number(coinInfo?.tokenPriceRates))).toLocaleString()}`} p={`Price`} />
           <GridCard ico={"https://gineousc.sirv.com/Images/icons/analytics.svg"} detail={coinInfo ? formatNumFreeStyle(coinInfo?.cap) : ''} type={'cap'} p={"Max Supply"} />
         </div>
-        <div className="div-2">
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/wallet.svg"} type={'address'} detail={"0x35CB38345f6f6FEfFa5AF922e5B5c08928F29c91"} p={"Beneficiary address"} />
-          <GridCard ico={"https://gineousc.sirv.com/Images/icons/wallet.svg"} type={'address'} detail={coinInfo?.contractAdress} p={"Token Contract Address"} />
-        </div>
+        
 
         <div className="info-tab">
           <div className="information">

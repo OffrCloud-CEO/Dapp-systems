@@ -115,7 +115,7 @@ const UserDividendPage = () => {
             <div className="dash-row home">
                 <div className="div-4">
                     <GridCard ico={"https://gineousc.sirv.com/Images/icons/money%20(2).svg"} detail={dividendPeriod ? `Active` : "Not active"} p={`Dividends Period`} type={dividendPeriod ? "status" : ''} />
-                    <GridCard ico={"https://gineousc.sirv.com/Images/icons/percentage.png"} detail={percent > 0 ? `${((percent / 1000))}%` : "---"} p={`Percent`} />
+                    <GridCard ico={"https://gineousc.sirv.com/Images/icons/percentage.png"} detail={percent > 0 ? `${((percent / 1000))}%` : "---"} p={`Percent per session`} />
                     <div className='kard'>
                         <div className="tag">Session(s)<img src="https://gineousc.sirv.com/Images/icons/external-fraction-math-vol-1-outline-outline-black-m-oki-orlando.png" alt="" /></div>
                         <div className="value">

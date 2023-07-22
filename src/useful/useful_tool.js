@@ -8,13 +8,13 @@ export function isValidEmail(email) {
 export function greetUser() {
   var currentHour = new Date().getHours();
   if (currentHour < 12) {
-    return ("Good morning!");
+    return ("Good Morning!");
   } else if (currentHour < 17) {
-    return ("Good afternoon!");
+    return ("Good Afternoon!");
   } else if (currentHour < 22) {
-    return ("Good evening!");
+    return ("Good Evening!");
   } else {
-    return ("Good night!");
+    return ("Good Night!");
   }
 }
 
