@@ -26,7 +26,6 @@ This Dapp was built using the following dependencies:
 
 - apexcharts
 - bootstrap
-- dotenv
 - emailjs-com
 - ethers
 - firebase
