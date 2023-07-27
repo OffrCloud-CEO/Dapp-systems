@@ -35,15 +35,7 @@ This Dapp was built using the following dependencies:
 - react
 - react-apexcharts
 - react-countdown
-- react-dom
-- react-dotenv
 - react-hot-toast
-- react-redux
-- react-router
-- react-router-dom
-- react-scripts
-- redux
-- web-vitals
 - web3
 
 
