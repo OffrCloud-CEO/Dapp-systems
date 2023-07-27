@@ -9,7 +9,7 @@ import { Toaster } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
 const UserDividendPage = () => {
-    const { storeDataUser, lastBlockTime, claimableData, dividendSessionData, dividendInitialInfo, tokenBalance, rootData } = useContext(contextData);
+    const { storeDataUser, lastBlockTime, claimableData, dividendSessionData, dividendInitialInfo, tokenBalance, rootData, adminConnected } = useContext(contextData);
 
     const [dividendPeriod, setIsDividendPeriod] = useState(false);
     const [percent, setPercent] = useState(0);
@@ -134,8 +134,8 @@ const UserDividendPage = () => {
 
                 <div className="form-divs">
                     {unclaimedDividends > 0 && <DividendForm defaultValue={ethers.utils.formatEther(unclaimedDividends)} type={0} status={unclaimedDividends > 0} />}
-                    <DividendForm type={1} />
-                    <DividendForm type={2} />
+                    {adminConnected && <DividendForm type={1} />}
+                    {adminConnected && <DividendForm type={2} />}
                 </div>
 
                 <div className="info-tab">
