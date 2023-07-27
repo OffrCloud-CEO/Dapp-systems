@@ -18,7 +18,7 @@ This is a Decentralized Application (Dapp) built using *React.js* and *Ethers.js
 To run OFFR Token Dapp locally on your machine, follow these simple steps
 
 1. Clone this repository using `git clone [https://github.com/fabiconcept/OFFR-Dapp.git](https://github.com/OffrCloud-CEO/Dapp-systems.git)`
-2. Install dependencies using `yarn install`
+2. Install dependencies using ```bash yarn install```
 3. Run the Dapp using `yarn start`
 
 ## Dependencies
