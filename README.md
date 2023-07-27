@@ -32,7 +32,6 @@ This Dapp was built using the following dependencies:
 - firebase
 - google-libphonenumber
 - libphonenumber-js
-- react
 - react-apexcharts
 - react-countdown
 - react-hot-toast
