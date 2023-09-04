@@ -33,7 +33,6 @@ This Dapp was built using the following dependencies:
 - libphonenumber-js
 - react-apexcharts
 - react-hot-toast
-- web3
 
 
 ## Links
