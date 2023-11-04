@@ -36,8 +36,7 @@ This Dapp was built using the following dependencies:
 
 
 ## Links
-
-- [OFFR Cloud Website](https://offrcloud.com)
+- [OFFR Cloud Website](https://dapp-systems.vercel.app/)
 - [Developer Website](https://www.github.com/fabiconcept)
 
 
